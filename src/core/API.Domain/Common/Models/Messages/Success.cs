@@ -36,5 +36,25 @@ namespace API.Domain.Common.Models.Messages
         {
             return $"{name} was added successfully.";
         }
+
+        public static string Locked(string name)
+        {
+            return $"{name} was locked successfully.";
+        }
+
+        public static string Unlocked(string name)
+        {
+            return $"{name} was unlocked successfully.";
+        }
+
+        public static string Activated(string name)
+        {
+            return $"{name} was activated successfully.";
+        }
+
+        public static string Deactivated(string name)
+        {
+            return $"{name} was deactivated successfully.";
+        }
     }
 }

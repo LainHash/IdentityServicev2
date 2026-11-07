@@ -1,5 +1,6 @@
 using API.Application.Features.Authentication.Services;
 using API.Application.Features.Business;
+using API.Application.Features.Business.Email;
 using API.Application.Features.Identity.OtpVerifications;
 using API.Application.Features.Identity.OtpVerifications.Commands.VerifyOtp;
 using API.Domain.Common.Models.Messages;
