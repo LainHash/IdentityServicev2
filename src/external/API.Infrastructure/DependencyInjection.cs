@@ -112,9 +112,12 @@ namespace API.Infrastructure
             services.AddHostedService<AuditLogRetentionJob>();
 
             // ── Authentication & Security ────────────────────────────────────
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddSingleton<RsaJwtKeyService>();
             services.AddSingleton<IJwtKeyService>(sp => sp.GetRequiredService<RsaJwtKeyService>());
-            services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddTransient<IJwtProvider, JwtProvider>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
+            services.AddTransient<IOtpHasher, OtpHasher>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             // ── Background Jobs ──────────────────────────────────────────────

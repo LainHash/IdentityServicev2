@@ -3,9 +3,11 @@ using System.Text.Json.Serialization;
 using API.Application;
 using API.Contract.Settings;
 using API.Infrastructure;
-using API.Infrastructure.Features.Authentication;
+using API.Infrastructure.Features.Authentication.Services;
 using DotNetEnv;
+using IdentityAPI.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -25,45 +27,6 @@ namespace IdentityAPI
                 options.SerializerOptions.Converters.Add(
                     new JsonStringEnumConverter());
             });
-
-            return services;
-        }
-
-        public static IServiceCollection AddJwtConfig(
-            this IServiceCollection services,
-            ConfigurationManager configuration)
-        {
-            var jwtSettings = configuration
-                .GetSection("Jwt")
-                .Get<JwtSettings>() ?? new JwtSettings();
-
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer();
-
-            services
-                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-                .Configure<RsaJwtKeyService>((options, keyService) =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = !string.IsNullOrWhiteSpace(jwtSettings.Issuer),
-                        ValidateAudience = !string.IsNullOrWhiteSpace(jwtSettings.Audience),
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidAudience = jwtSettings.Audience,
-                        IssuerSigningKey = keyService.GetValidationKey(),
-                        RoleClaimType = ClaimTypes.Role,
-                        NameClaimType = ClaimTypes.NameIdentifier
-                    };
-                });
-
-            services.AddAuthorization();
 
             return services;
         }
@@ -144,34 +107,31 @@ namespace IdentityAPI
                 ?? throw new InvalidOperationException(
                     "JwtSettings configuration is missing.");
 
-            if (jwtSettings is not null)
-            {
-                services
-                    .AddAuthentication(options =>
-                    {
-                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    })
-                    .AddJwtBearer(options =>
-                    {
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidateAudience = true,
-                            ValidateLifetime = true,
-                            ValidateIssuerSigningKey = true,
-                            ValidIssuer = jwtSettings.Issuer,
-                            ValidAudience = jwtSettings.Audience,
-                            IssuerSigningKey = new SymmetricSecurityKey(
-                                System.Text.Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-                        };
-                    });
-            }
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer();
 
             services
                 .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-                .Configure<IOptions<AuthCookieSettings>>((options, cookieOptions) =>
+                .Configure<RsaJwtKeyService, IOptions<AuthCookieSettings>>((options, keyService, cookieOptions) =>
                 {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = !string.IsNullOrWhiteSpace(jwtSettings.Issuer),
+                        ValidateAudience = !string.IsNullOrWhiteSpace(jwtSettings.Audience),
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = keyService.GetValidationKey(),
+                        RoleClaimType = ClaimTypes.Role,
+                        NameClaimType = ClaimTypes.NameIdentifier
+                    };
+
                     var cookieName = cookieOptions.Value.AccessTokenCookieName;
                     var events = options.Events ?? new JwtBearerEvents();
                     var previous = events.OnMessageReceived;
@@ -204,6 +164,8 @@ namespace IdentityAPI
 
                     options.Events = events;
                 });
+
+            services.AddAuthorization();
 
             return services;
         }

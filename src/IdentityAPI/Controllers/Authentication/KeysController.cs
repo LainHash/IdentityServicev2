@@ -1,4 +1,4 @@
-using API.Application.Features.Authentication;
+using API.Application.Features.Authentication.Services;
 using API.Contract.DTOs.Authentication;
 using API.Contract.Settings;
 using Microsoft.AspNetCore.Authorization;
@@ -11,11 +11,9 @@ namespace IdentityAPI.Controllers.Authentication
     [AllowAnonymous]
     public class KeysController(
         IJwtKeyService keyService,
-        IJwtProvider jwtProvider,
         IOptions<AppSettings> appSettings) : ControllerBase
     {
         private readonly IJwtKeyService _keyService = keyService;
-        private readonly IJwtProvider _jwtProvider = jwtProvider;
         private readonly JwtSettings _jwtSettings = appSettings.Value.Jwt;
 
         /// <summary>
@@ -72,34 +70,5 @@ namespace IdentityAPI.Controllers.Authentication
 
             return Ok(response);
         }
-
-        /// <summary>
-        /// [Dev/Test] Phát hành thử JWT ký bằng RSA Private Key (RS256) để test phân quyền ở các Microservice khác
-        /// </summary>
-        [HttpPost("api/identity/keys/test-token")]
-        public IActionResult GenerateTestToken([FromBody] GenerateTestTokenRequest? request)
-        {
-            var userId = request?.UserPublicId ?? Guid.NewGuid();
-            var email = string.IsNullOrWhiteSpace(request?.Email)
-                ? "superadmin@restaurant.local"
-                : request.Email;
-            var roles = request?.Roles is { Length: > 0 }
-                ? request.Roles
-                : ["SuperAdmin", "Admin"];
-
-            var accessToken = _jwtProvider.GenerateAccessToken(userId, email, roles);
-
-            return Ok(new
-            {
-                AccessToken = accessToken,
-                TokenType = "Bearer",
-                Algorithm = _keyService.Algorithm,
-                KeyId = _keyService.KeyId,
-                UserPublicId = userId,
-                Email = email,
-                Roles = roles
-            });
-        }
     }
 }
-
