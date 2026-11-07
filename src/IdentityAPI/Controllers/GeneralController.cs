@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityAPI.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("api/identity")]
     public class GeneralController(IMediator mediator)
         : ControllerBase
     {

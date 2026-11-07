@@ -14,7 +14,20 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(c =>
+    {
+        c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
+        {
+            if (httpReq.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix) &&
+                !string.IsNullOrWhiteSpace(prefix))
+            {
+                swaggerDoc.Servers =
+                [
+                    new Microsoft.OpenApi.Models.OpenApiServer { Url = prefix.ToString() }
+                ];
+            }
+        });
+    });
     app.UseSwaggerUI();
 }
 

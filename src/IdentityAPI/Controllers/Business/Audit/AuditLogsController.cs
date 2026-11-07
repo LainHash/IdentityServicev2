@@ -1,11 +1,13 @@
 ﻿using API.Application.Features.Business.Audit.Queries.GetAll;
 using IdentityAPI.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityAPI.Controllers.Business.Audit
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    [Route("api/admin/identity/audit-logs")]
     [ApiController]
     public class AuditLogsController(IMediator mediator) : ControllerBase
     {
