@@ -1,4 +1,4 @@
-﻿using API.Domain.Common.Models.Results;
+using API.Domain.Common.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityAPI.Extensions
