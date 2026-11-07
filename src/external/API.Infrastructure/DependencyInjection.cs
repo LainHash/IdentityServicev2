@@ -3,7 +3,11 @@ using API.Application.Features.Authentication.Services;
 using API.Application.Features.Business;
 using API.Application.Features.Business.Audit;
 using API.Application.Features.Business.Bootstrap.Services;
+using API.Application.Features.Business.Email;
 using API.Application.Features.Business.Import;
+using API.Application.Features.Identity.OtpVerifications;
+using API.Application.Features.Identity.Roles;
+using API.Application.Features.Identity.Users;
 using API.Contract.Settings;
 using API.Domain.Common.Repositories;
 using API.Domain.Features.Business.Audit;
@@ -15,7 +19,12 @@ using API.Infrastructure.Features.Authentication.Services;
 using API.Infrastructure.Features.Business.Audit;
 using API.Infrastructure.Features.Business.Audit.Services;
 using API.Infrastructure.Features.Business.Bootstrap;
+using API.Infrastructure.Features.Business.Email;
+using API.Infrastructure.Features.Business.Email.Background;
 using API.Infrastructure.Features.Business.Import;
+using API.Infrastructure.Features.Identity.OtpVerifications;
+using API.Infrastructure.Features.Identity.Roles;
+using API.Infrastructure.Features.Identity.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -109,11 +118,20 @@ namespace API.Infrastructure
             services.AddTransient<IOtpHasher, OtpHasher>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+            // ── Background Jobs ──────────────────────────────────────────────
+            services.AddSingleton<IEmailQueue, EmailQueue>();
+            services.AddHostedService<EmailBackgroundWorker>();
+
             // ── Services ─────────────────────────────────────────────────────
+            services.AddSingleton(TimeProvider.System);
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IImportService, ImportService>();
             services.AddScoped<IBootstrapService, BootstrapService>();
+            services.AddScoped<IEmailService, EmailService>();
 
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IOtpVerificationService, OtpVerificationService>();
 
             return services;
         }
