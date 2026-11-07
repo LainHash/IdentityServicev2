@@ -1,10 +1,11 @@
-using CatalogAPI;
+using IdentityAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEnvConfig(builder.Configuration);
+builder.Services.AddJwtConfig(builder.Configuration);
 builder.Services.AddMyServices(builder.Configuration);
 builder.Services.AddCustomSwagger();
 

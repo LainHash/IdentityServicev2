@@ -1,9 +1,9 @@
 ﻿using API.Application.Features.Business.Audit.Queries.GetAll;
-using CatalogAPI.Extensions;
+using IdentityAPI.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogAPI.Controllers.Business.Audit
+namespace IdentityAPI.Controllers.Business.Audit
 {
     [Route("api/[controller]")]
     [ApiController]
