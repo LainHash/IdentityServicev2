@@ -13,35 +13,35 @@ namespace API.Application.Features.Identity.Users
 {
     public interface IUserService
     {
-        Task<PaginationResponse<IEnumerable<UserResponse>>> GetAllAsync(
+        Task<PaginationResult<IEnumerable<UserResponse>>> GetAllAsync(
             GetAllUsersSpecification specification,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse<UserResponse>> GetByIdAsync(
+        Task<Result<UserResponse>> GetByIdAsync(
             GetUserByIdSpecification specification,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> ChangePasswordAsync(
+        Task<Result> ChangePasswordAsync(
             ChangePasswordCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> DeleteAsync(
+        Task<Result> DeleteAsync(
             DeleteUserCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> RestoreAsync(
+        Task<Result> RestoreAsync(
             RestoreUserCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> ForceChangePasswordAsync(
+        Task<Result> ForceChangePasswordAsync(
             ForceChangePasswordCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> ToggleLockAsync(
+        Task<Result> ToggleLockAsync(
             ToggleLockUserCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> ToggleActiveAsync(
+        Task<Result> ToggleActiveAsync(
             ToggleActiveUserCommand command,
             CancellationToken cancellationToken = default);
     }

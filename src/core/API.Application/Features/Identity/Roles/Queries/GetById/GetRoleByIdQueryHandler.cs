@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Queries.GetById
 {
     internal class GetRoleByIdQueryHandler(IRoleService roleService)
-        : IRequestHandler<GetRoleByIdQuery, APIResponse<RoleDetailResponse>>
+        : IRequestHandler<GetRoleByIdQuery, Result<RoleDetailResponse>>
     {
         private readonly IRoleService _roleService = roleService;
 
-        public async Task<APIResponse<RoleDetailResponse>> Handle(
+        public async Task<Result<RoleDetailResponse>> Handle(
             GetRoleByIdQuery request,
             CancellationToken cancellationToken)
         {

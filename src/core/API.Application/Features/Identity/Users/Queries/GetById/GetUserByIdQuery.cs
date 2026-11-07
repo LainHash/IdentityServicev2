@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Users.Queries.GetById
 {
     public record GetUserByIdQuery(Guid Id)
-        : IRequest<APIResponse<UserResponse>>
+        : IRequest<Result<UserResponse>>
     {
     }
 }

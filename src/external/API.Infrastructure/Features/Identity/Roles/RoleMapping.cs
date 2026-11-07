@@ -13,7 +13,7 @@ namespace API.Infrastructure.Features.Identity.Roles
             CreateMap<Role, RoleResponse>()
                 .ForMember(dest => dest.UserCount,
                     opt => opt.MapFrom(src => src.Users.Count))
-                .IncludeBase<SoftDeletableEntity, SoftDeletableDTOResponse>();
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<Role, RoleDetailResponse>()
                 .IncludeBase<Role, RoleResponse>();

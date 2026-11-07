@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Authentication.Commands.Register
 {
     public record RegisterCommand(RegisterRequest Body)
-        : IRequest<APIResponse>
+        : IRequest<Result>
     {
     }
 }

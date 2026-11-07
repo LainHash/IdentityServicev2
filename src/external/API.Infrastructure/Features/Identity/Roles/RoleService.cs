@@ -1,4 +1,4 @@
-using API.Application.Common.Services;
+using API.Application.Features.Business;
 using API.Application.Features.Identity.Roles;
 using API.Application.Features.Identity.Roles.Commands.Create;
 using API.Application.Features.Identity.Roles.Commands.Delete;
@@ -31,7 +31,7 @@ namespace API.Infrastructure.Features.Identity.Roles
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<PaginationResponse<IEnumerable<RoleResponse>>> GetAllAsync(
+        public async Task<PaginationResult<IEnumerable<RoleResponse>>> GetAllAsync(
             GetAllRolesSpecification specification,
             CancellationToken cancellationToken = default)
         {
@@ -45,11 +45,11 @@ namespace API.Infrastructure.Features.Identity.Roles
             var take = specification.Take;
 
             var response = _mapper.Map<IEnumerable<RoleResponse>>(roles);
-            return PaginationResponse<IEnumerable<RoleResponse>>
+            return PaginationResult<IEnumerable<RoleResponse>>
                 .Succeed(response, Success.Retrieved("Roles"), totalItems, skip, take);
         }
 
-        public async Task<APIResponse<RoleDetailResponse>> GetByIdAsync(
+        public async Task<Result<RoleDetailResponse>> GetByIdAsync(
             GetRoleByIdSpecification specification,
             CancellationToken cancellationToken = default)
         {
@@ -57,16 +57,16 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .FindAsync(specification, cancellationToken);
             if (role is null)
             {
-                return APIResponse<RoleDetailResponse>
+                return Result<RoleDetailResponse>
                     .Fail(Error.NotFound("Role"), HttpStatusCode.NotFound);
             }
 
             var response = _mapper.Map<RoleDetailResponse>(role);
-            return APIResponse<RoleDetailResponse>
+            return Result<RoleDetailResponse>
                 .Succeed(response, Success.Retrieved("Role"));
         }
 
-        public async Task<APIResponse<RoleResponse>> CreateAsync(
+        public async Task<Result<RoleResponse>> CreateAsync(
             CreateRoleCommand command,
             CancellationToken cancellationToken = default)
         {
@@ -74,7 +74,7 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .IsExistingNameAsync(null, command.Body.Name, cancellationToken);
             if (isExisting)
             {
-                return APIResponse<RoleResponse>
+                return Result<RoleResponse>
                     .Fail(Error.ExistedName("Role"), HttpStatusCode.Conflict);
             }
 
@@ -84,11 +84,11 @@ namespace API.Infrastructure.Features.Identity.Roles
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var response = _mapper.Map<RoleResponse>(role);
-            return APIResponse<RoleResponse>
+            return Result<RoleResponse>
                 .Succeed(response, Success.Created("Role"), HttpStatusCode.Created);
         }
 
-        public async Task<APIResponse<RoleResponse>> UpdateAsync(
+        public async Task<Result<RoleResponse>> UpdateAsync(
             UpdateRoleCommand command,
             CancellationToken cancellationToken = default)
         {
@@ -96,7 +96,7 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .FindByIdAsync(command.Id, cancellationToken);
             if (role is null || role.IsDeleted)
             {
-                return APIResponse<RoleResponse>
+                return Result<RoleResponse>
                     .Fail(Error.NotFound("Role"), HttpStatusCode.NotFound);
             }
 
@@ -104,7 +104,7 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .IsExistingNameAsync(role.PublicId, command.Body.Name, cancellationToken);
             if (isExisting)
             {
-                return APIResponse<RoleResponse>
+                return Result<RoleResponse>
                     .Fail(Error.ExistedName("Role"), HttpStatusCode.Conflict);
             }
 
@@ -113,11 +113,11 @@ namespace API.Infrastructure.Features.Identity.Roles
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             var response = _mapper.Map<RoleResponse>(role);
-            return APIResponse<RoleResponse>
+            return Result<RoleResponse>
                 .Succeed(response, Success.Updated("Role"));
         }
 
-        public async Task<APIResponse> DeleteAsync(
+        public async Task<Result> DeleteAsync(
             DeleteRoleCommand command,
             CancellationToken cancellationToken = default)
         {
@@ -125,24 +125,24 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .FindByIdAsync(command.Id, cancellationToken);
             if (role is null)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("Role"), HttpStatusCode.NotFound);
             }
 
             if (role.IsDeleted)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.AlreadyDeleted("Role"), HttpStatusCode.Conflict);
             }
 
             role.SoftDelete();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return APIResponse
+            return Result
                 .Succeed(Success.Deleted("Role"));
         }
 
-        public async Task<APIResponse> RestoreAsync(
+        public async Task<Result> RestoreAsync(
             RestoreRoleCommand command,
             CancellationToken cancellationToken = default)
         {
@@ -150,20 +150,20 @@ namespace API.Infrastructure.Features.Identity.Roles
                 .FindByIdAsync(command.Id, cancellationToken);
             if (role is null)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("Role"), HttpStatusCode.NotFound);
             }
 
             if (!role.IsDeleted)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotYetDeleted("Role"), HttpStatusCode.Conflict);
             }
 
             role.Restore();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return APIResponse
+            return Result
                 .Succeed(Success.Restored("Role"));
         }
     }

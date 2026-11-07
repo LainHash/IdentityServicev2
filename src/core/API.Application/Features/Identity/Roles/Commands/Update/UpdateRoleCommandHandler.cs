@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Update
 {
     internal class UpdateRoleCommandHandler(IRoleService roleService)
-        : IRequestHandler<UpdateRoleCommand, APIResponse<RoleResponse>>
+        : IRequestHandler<UpdateRoleCommand, Result<RoleResponse>>
     {
         private readonly IRoleService _roleService = roleService;
 
-        public async Task<APIResponse<RoleResponse>> Handle(
+        public async Task<Result<RoleResponse>> Handle(
             UpdateRoleCommand request,
             CancellationToken cancellationToken)
         {

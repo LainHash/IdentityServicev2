@@ -4,11 +4,11 @@ using MediatR;
 namespace API.Application.Features.Authentication.Commands.Logout
 {
     internal class LogoutCommandHandler(IAuthenticationService authenticationService)
-        : IRequestHandler<LogoutCommand, APIResponse>
+        : IRequestHandler<LogoutCommand, Result>
     {
         private readonly IAuthenticationService _authenticationService = authenticationService;
 
-        public async Task<APIResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
             return await _authenticationService.LogoutAsync(request, cancellationToken);
         }

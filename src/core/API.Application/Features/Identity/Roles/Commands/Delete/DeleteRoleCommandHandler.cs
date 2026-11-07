@@ -4,11 +4,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Delete
 {
     internal class DeleteRoleCommandHandler(IRoleService roleService)
-        : IRequestHandler<DeleteRoleCommand, APIResponse>
+        : IRequestHandler<DeleteRoleCommand, Result>
     {
         private readonly IRoleService _roleService = roleService;
 
-        public async Task<APIResponse> Handle(
+        public async Task<Result> Handle(
             DeleteRoleCommand request,
             CancellationToken cancellationToken)
         {

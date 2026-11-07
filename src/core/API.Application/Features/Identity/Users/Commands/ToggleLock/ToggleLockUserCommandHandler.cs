@@ -4,11 +4,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Users.Commands.ToggleLock
 {
     internal class ToggleLockUserCommandHandler(IUserService userService)
-        : IRequestHandler<ToggleLockUserCommand, APIResponse>
+        : IRequestHandler<ToggleLockUserCommand, Result>
     {
         private readonly IUserService _userService = userService;
 
-        public async Task<APIResponse> Handle(
+        public async Task<Result> Handle(
             ToggleLockUserCommand request,
             CancellationToken cancellationToken)
         {

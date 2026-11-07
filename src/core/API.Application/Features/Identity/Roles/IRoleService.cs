@@ -11,27 +11,27 @@ namespace API.Application.Features.Identity.Roles
 {
     public interface IRoleService
     {
-        Task<PaginationResponse<IEnumerable<RoleResponse>>> GetAllAsync(
+        Task<PaginationResult<IEnumerable<RoleResponse>>> GetAllAsync(
             GetAllRolesSpecification specification,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse<RoleDetailResponse>> GetByIdAsync(
+        Task<Result<RoleDetailResponse>> GetByIdAsync(
             GetRoleByIdSpecification specification,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse<RoleResponse>> CreateAsync(
+        Task<Result<RoleResponse>> CreateAsync(
             CreateRoleCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse<RoleResponse>> UpdateAsync(
+        Task<Result<RoleResponse>> UpdateAsync(
             UpdateRoleCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> DeleteAsync(
+        Task<Result> DeleteAsync(
             DeleteRoleCommand command,
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> RestoreAsync(
+        Task<Result> RestoreAsync(
             RestoreRoleCommand command,
             CancellationToken cancellationToken = default);
     }

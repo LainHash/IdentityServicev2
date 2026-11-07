@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Authentication.Commands.RefreshToken
 {
     internal class RefreshTokenCommandHandler(IAuthenticationService authenticationService)
-        : IRequestHandler<RefreshTokenCommand, APIResponse<AuthenticationResponse>>
+        : IRequestHandler<RefreshTokenCommand, Result<AuthenticationResponse>>
     {
         private readonly IAuthenticationService _authenticationService = authenticationService;
 
-        public async Task<APIResponse<AuthenticationResponse>> Handle(
+        public async Task<Result<AuthenticationResponse>> Handle(
             RefreshTokenCommand request,
             CancellationToken cancellationToken)
         {

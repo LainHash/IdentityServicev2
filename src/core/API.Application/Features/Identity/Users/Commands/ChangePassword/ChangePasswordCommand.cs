@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Users.Commands.ChangePassword
 {
     public record ChangePasswordCommand(Guid UserId, ChangePasswordRequest Body)
-        : IRequest<APIResponse>
+        : IRequest<Result>
     {
     }
 }

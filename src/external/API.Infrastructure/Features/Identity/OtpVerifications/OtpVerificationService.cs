@@ -1,6 +1,5 @@
-using API.Application.Common.Services;
 using API.Application.Features.Authentication.Services;
-using API.Application.Features.Business.Email;
+using API.Application.Features.Business;
 using API.Application.Features.Identity.OtpVerifications;
 using API.Application.Features.Identity.OtpVerifications.Commands.VerifyOtp;
 using API.Domain.Common.Models.Messages;
@@ -72,7 +71,7 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
             }
         }
 
-        public async Task<APIResponse> VerifyOtpAsync(
+        public async Task<Result> VerifyOtpAsync(
             VerifyOtpCommand command,
             CancellationToken cancellationToken = default)
         {
@@ -80,7 +79,7 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
                 .FindByEmailAsync(command.Body.Email, cancellationToken);
             if (user is null)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
@@ -88,7 +87,7 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
                 .FindActiveAsync(user.Id, command.Body.Purpose, cancellationToken);
             if (otpVerification is null || !otpVerification.IsAvailable || otpVerification.UsedAt.HasValue)
             {
-                return APIResponse
+                return Result
                     .Fail("OTP code is invalid or has already been used.", HttpStatusCode.BadRequest);
             }
 
@@ -97,7 +96,7 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
                 otpVerification.Invalidate();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                return APIResponse
+                return Result
                     .Fail("OTP code has expired.", HttpStatusCode.BadRequest);
             }
 
@@ -106,7 +105,7 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
                 otpVerification.Invalidate();
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-                return APIResponse
+                return Result
                     .Fail("Maximum failed attempts reached. Please request a new OTP code.", HttpStatusCode.TooManyRequests);
             }
 
@@ -122,11 +121,11 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
 
                 if (!otpVerification.IsAvailable)
                 {
-                    return APIResponse
+                    return Result
                         .Fail("Maximum failed attempts reached. Please request a new OTP code.", HttpStatusCode.TooManyRequests);
                 }
 
-                return APIResponse
+                return Result
                     .Fail("Invalid OTP code.", HttpStatusCode.BadRequest);
             }
 
@@ -138,15 +137,15 @@ namespace API.Infrastructure.Features.Identity.OtpVerifications
                 case OtpPurpose.EmailVerification:
                     user.CompleteVerification();
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
-                    return APIResponse.Succeed("Email verified successfully.");
+                    return Result.Succeed("Email verified successfully.");
 
                 case OtpPurpose.PasswordReset:
                     var resetToken = _jwtProvider.GeneratePasswordResetToken(user.Id);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
-                    return APIResponse<string>.Succeed(resetToken, "OTP verified successfully.");
+                    return Result<string>.Succeed(resetToken, "OTP verified successfully.");
 
                 default:
-                    return APIResponse.Fail("Unsupported OTP purpose.", HttpStatusCode.BadRequest);
+                    return Result.Fail("Unsupported OTP purpose.", HttpStatusCode.BadRequest);
             }
         }
 

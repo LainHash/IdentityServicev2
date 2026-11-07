@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Users.Queries.GetById
 {
     internal class GetUserByIdQueryHandler(IUserService userService)
-                : IRequestHandler<GetUserByIdQuery, APIResponse<UserResponse>>
+                : IRequestHandler<GetUserByIdQuery, Result<UserResponse>>
     {
         private readonly IUserService _userService = userService;
 
-        public async Task<APIResponse<UserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<UserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var specification = new GetUserByIdSpecification(request);
             return await _userService.GetByIdAsync(specification, cancellationToken);

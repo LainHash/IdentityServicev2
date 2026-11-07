@@ -4,11 +4,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Restore
 {
     internal class RestoreRoleCommandHandler(IRoleService roleService)
-        : IRequestHandler<RestoreRoleCommand, APIResponse>
+        : IRequestHandler<RestoreRoleCommand, Result>
     {
         private readonly IRoleService _roleService = roleService;
 
-        public async Task<APIResponse> Handle(
+        public async Task<Result> Handle(
             RestoreRoleCommand request,
             CancellationToken cancellationToken)
         {

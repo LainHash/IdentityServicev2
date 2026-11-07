@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using API.Domain.Features.Identity.Roles;
 using API.Infrastructure.Common.Repositories;
-using API.Infrastructure.Contexts.Data;
+using API.Infrastructure.Context;
 
 namespace API.Infrastructure.Features.Identity.Roles
 {

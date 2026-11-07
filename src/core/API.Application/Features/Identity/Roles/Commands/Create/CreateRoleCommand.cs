@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Create
 {
     public record CreateRoleCommand(CreateRoleRequest Body)
-        : IRequest<APIResponse<RoleResponse>>
+        : IRequest<Result<RoleResponse>>
     {
     }
 }

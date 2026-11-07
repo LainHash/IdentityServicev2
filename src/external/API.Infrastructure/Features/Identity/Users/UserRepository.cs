@@ -1,6 +1,6 @@
 using API.Domain.Features.Identity.Users;
 using API.Infrastructure.Common.Repositories;
-using API.Infrastructure.Contexts.Data;
+using API.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 

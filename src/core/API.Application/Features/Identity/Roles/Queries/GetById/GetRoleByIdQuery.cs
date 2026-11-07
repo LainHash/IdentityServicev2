@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Queries.GetById
 {
     public record GetRoleByIdQuery(Guid Id)
-        : IRequest<APIResponse<RoleDetailResponse>>
+        : IRequest<Result<RoleDetailResponse>>
     {
     }
 }

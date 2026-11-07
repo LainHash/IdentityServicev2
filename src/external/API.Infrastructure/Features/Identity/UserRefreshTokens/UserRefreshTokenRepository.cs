@@ -1,6 +1,6 @@
 using API.Domain.Features.Identity.UserResfreshTokens;
 using API.Infrastructure.Common.Repositories;
-using API.Infrastructure.Contexts.Data;
+using API.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Infrastructure.Features.Identity.UserRefreshTokens

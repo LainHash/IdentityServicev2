@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Create
 {
     internal class CreateRoleCommandHandler(IRoleService roleService)
-        : IRequestHandler<CreateRoleCommand, APIResponse<RoleResponse>>
+        : IRequestHandler<CreateRoleCommand, Result<RoleResponse>>
     {
         private readonly IRoleService _roleService = roleService;
 
-        public async Task<APIResponse<RoleResponse>> Handle(
+        public async Task<Result<RoleResponse>> Handle(
             CreateRoleCommand request,
             CancellationToken cancellationToken)
         {

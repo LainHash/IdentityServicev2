@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Authentication.Commands.Login
 {
     public record LoginCommand(LoginRequest Body)
-        : IRequest<APIResponse<AuthenticationResponse>>
+        : IRequest<Result<AuthenticationResponse>>
     {
     }
 }

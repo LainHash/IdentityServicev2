@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Identity.Users.Commands.ChangePassword
 {
     internal class ChangePasswordCommandHandler(IUserService userService)
-                : IRequestHandler<ChangePasswordCommand, APIResponse>
+                : IRequestHandler<ChangePasswordCommand, Result>
     {
         private readonly IUserService _userService = userService;
 
-        public async Task<APIResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             return await _userService.ChangePasswordAsync(request, cancellationToken);
         }

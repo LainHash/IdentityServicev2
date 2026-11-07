@@ -14,12 +14,12 @@ namespace API.Infrastructure.Features.Identity.Users
             CreateMap<User, UserResponse>()
                 .ForMember(dest => dest.RoleName, 
                     opt => opt.MapFrom(src => src.Role.Name))
-                .IncludeBase<SoftDeletableEntity, SoftDeletableDTOResponse>();
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<RegisterRequest, User>();
 
             CreateMap<User, UserMinimalResponse>()
-                .IncludeBase<SoftDeletableEntity, SoftDeletableDTOResponse>();
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
         }
     }
 }

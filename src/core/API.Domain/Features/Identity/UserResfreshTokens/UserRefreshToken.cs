@@ -3,7 +3,7 @@ using API.Domain.Features.Identity.Users;
 
 namespace API.Domain.Features.Identity.UserResfreshTokens
 {
-    public class UserRefreshToken : BaseEntity
+    public class UserRefreshToken : Entity
     {
         public string TokenHash { get; private set; } = string.Empty;
         public DateTime ExpiresAt { get; private set; }

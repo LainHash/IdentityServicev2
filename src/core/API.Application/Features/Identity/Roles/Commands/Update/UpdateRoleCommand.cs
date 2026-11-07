@@ -5,7 +5,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Update
 {
     public record UpdateRoleCommand(Guid Id, UpdateRoleRequest Body)
-        : IRequest<APIResponse<RoleResponse>>
+        : IRequest<Result<RoleResponse>>
     {
     }
 }

@@ -4,7 +4,7 @@ using MediatR;
 namespace API.Application.Features.Identity.Roles.Commands.Delete
 {
     public record DeleteRoleCommand(Guid Id)
-        : IRequest<APIResponse>
+        : IRequest<Result>
     {
     }
 }

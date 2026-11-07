@@ -1,5 +1,5 @@
-using API.Application.Common.Services;
 using API.Application.Features.Authentication.Services;
+using API.Application.Features.Business;
 using API.Application.Features.Identity.Users;
 using API.Application.Features.Identity.Users.Commands.ChangePassword;
 using API.Application.Features.Identity.Users.Commands.Delete;
@@ -43,7 +43,7 @@ namespace API.Infrastructure.Features.Identity.Users
             _userRefreshTokenRepository = userRefreshTokenRepository;
         }
 
-        public async Task<PaginationResponse<IEnumerable<UserResponse>>> GetAllAsync(
+        public async Task<PaginationResult<IEnumerable<UserResponse>>> GetAllAsync(
             GetAllUsersSpecification specification, 
             CancellationToken cancellationToken = default)
         {
@@ -57,11 +57,11 @@ namespace API.Infrastructure.Features.Identity.Users
             var take = specification.Take;
 
             var response = _mapper.Map<IEnumerable<UserResponse>>(users);
-            return PaginationResponse<IEnumerable<UserResponse>>
+            return PaginationResult<IEnumerable<UserResponse>>
                 .Succeed(response, Success.Retrieved("Users"), totalItems, skip, take);
         }
 
-        public async Task<APIResponse<UserResponse>> GetByIdAsync(
+        public async Task<Result<UserResponse>> GetByIdAsync(
             GetUserByIdSpecification specification, 
             CancellationToken cancellationToken = default)
         {
@@ -69,30 +69,30 @@ namespace API.Infrastructure.Features.Identity.Users
                 .FindAsync(specification, cancellationToken);
             if(user is null)
             {
-                return APIResponse<UserResponse>
+                return Result<UserResponse>
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
             var response = _mapper.Map<UserResponse>(user);
-            return APIResponse<UserResponse>
+            return Result<UserResponse>
                 .Succeed(response, Success.Retrieved("User"));
         }
 
 
-        public async Task<APIResponse> ChangePasswordAsync(
+        public async Task<Result> ChangePasswordAsync(
             ChangePasswordCommand command,
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.UserId, cancellationToken);
             if (user is null || !user.IsActive)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
             if (!_passwordHasher.VerifyPassword(command.Body.OldPassword, user.PasswordHash))
             {
-                return APIResponse
+                return Result
                     .Fail("Current password is incorrect.", HttpStatusCode.BadRequest);
             }
 
@@ -102,18 +102,18 @@ namespace API.Infrastructure.Features.Identity.Users
             await _userRefreshTokenRepository.RevokeAllByUserIdAsync(user.Id, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return APIResponse
+            return Result
                 .Succeed("Password changed successfully. Please login with your new password.");
         }
 
-        public async Task<APIResponse> DeleteAsync(
+        public async Task<Result> DeleteAsync(
             DeleteUserCommand command, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.Id, cancellationToken);
             if (user is null)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
@@ -125,7 +125,7 @@ namespace API.Infrastructure.Features.Identity.Users
             {
                 if (user.IsDeleted)
                 {
-                    return APIResponse
+                    return Result
                         .Fail(Error.AlreadyDeleted("User"), HttpStatusCode.Conflict);
                 }
 
@@ -133,24 +133,24 @@ namespace API.Infrastructure.Features.Identity.Users
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return APIResponse
+            return Result
                 .Succeed(Success.Deleted("User"));
         }
 
-        public async Task<APIResponse> RestoreAsync(
+        public async Task<Result> RestoreAsync(
             RestoreUserCommand command,
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.Id, cancellationToken);
             if (user is null)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
             if(!user.IsDeleted)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotYetDeleted("User"), HttpStatusCode.Conflict);
             }
 
@@ -158,18 +158,18 @@ namespace API.Infrastructure.Features.Identity.Users
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return APIResponse
+            return Result
                 .Succeed(Success.Restored("User"));
         }
 
-        public async Task<APIResponse> ForceChangePasswordAsync(
+        public async Task<Result> ForceChangePasswordAsync(
             ForceChangePasswordCommand command, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.Id, cancellationToken);
             if (user is null || !user.IsActive)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
@@ -179,18 +179,18 @@ namespace API.Infrastructure.Features.Identity.Users
             await _userRefreshTokenRepository.RevokeAllByUserIdAsync(user.Id, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return APIResponse
+            return Result
                 .Succeed("Password changed successfully.");
         }
 
-        public async Task<APIResponse> ToggleLockAsync(
+        public async Task<Result> ToggleLockAsync(
             ToggleLockUserCommand command,
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.Id, cancellationToken);
             if (user is null || user.IsDeleted)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
@@ -207,17 +207,17 @@ namespace API.Infrastructure.Features.Identity.Users
                 ? Success.Locked("User")
                 : Success.Unlocked("User");
 
-            return APIResponse.Succeed(message);
+            return Result.Succeed(message);
         }
 
-        public async Task<APIResponse> ToggleActiveAsync(
+        public async Task<Result> ToggleActiveAsync(
             ToggleActiveUserCommand command,
             CancellationToken cancellationToken = default)
         {
             var user = await _userRepository.FindByIdAsync(command.Id, cancellationToken);
             if (user is null || user.IsDeleted)
             {
-                return APIResponse
+                return Result
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
@@ -234,7 +234,7 @@ namespace API.Infrastructure.Features.Identity.Users
                 ? Success.Activated("User")
                 : Success.Deactivated("User");
 
-            return APIResponse.Succeed(message);
+            return Result.Succeed(message);
         }
     }
 }

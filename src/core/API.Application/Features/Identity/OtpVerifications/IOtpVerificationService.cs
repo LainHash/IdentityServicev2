@@ -10,7 +10,7 @@ namespace API.Application.Features.Identity.OtpVerifications
             User user, 
             CancellationToken cancellationToken = default);
 
-        Task<APIResponse> VerifyOtpAsync(
+        Task<Result> VerifyOtpAsync(
             VerifyOtpCommand command,
             CancellationToken cancellationToken = default);
     }

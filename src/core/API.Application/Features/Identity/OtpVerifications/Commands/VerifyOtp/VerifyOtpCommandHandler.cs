@@ -4,11 +4,11 @@ using MediatR;
 namespace API.Application.Features.Identity.OtpVerifications.Commands.VerifyOtp
 {
     internal class VerifyOtpCommandHandler(IOtpVerificationService otpVerificationService)
-                : IRequestHandler<VerifyOtpCommand, APIResponse>
+                : IRequestHandler<VerifyOtpCommand, Result>
     {
         private readonly IOtpVerificationService _otpVerificationService = otpVerificationService;
 
-        public async Task<APIResponse> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
         {
             return await _otpVerificationService.VerifyOtpAsync(request, cancellationToken);
         }

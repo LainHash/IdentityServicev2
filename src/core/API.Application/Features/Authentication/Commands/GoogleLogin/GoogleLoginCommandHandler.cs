@@ -5,11 +5,11 @@ using MediatR;
 namespace API.Application.Features.Authentication.Commands.GoogleLogin
 {
     internal class GoogleLoginCommandHandler(IAuthenticationService authenticationService)
-        : IRequestHandler<GoogleLoginCommand, APIResponse<AuthenticationResponse>>
+        : IRequestHandler<GoogleLoginCommand, Result<AuthenticationResponse>>
     {
         private readonly IAuthenticationService _authenticationService = authenticationService;
 
-        public async Task<APIResponse<AuthenticationResponse>> Handle(
+        public async Task<Result<AuthenticationResponse>> Handle(
             GoogleLoginCommand request,
             CancellationToken cancellationToken)
         {

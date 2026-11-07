@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using API.Infrastructure.Contexts.Data;
 using API.Domain.Features.Identity.OtpVerifications;
 using API.Infrastructure.Common.Repositories;
 using API.Domain.Entities.Identity.OtpVerifications;
 using API.Domain.Features.Identity.OtpVerifications.Enums;
+using API.Infrastructure.Context;
 
 namespace API.Infrastructure.Features.Identity.OtpVerifications
 {
