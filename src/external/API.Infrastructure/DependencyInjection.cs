@@ -1,4 +1,5 @@
 using API.Application.Features.Authentication;
+using API.Application.Features.Authentication.Services;
 using API.Application.Features.Business;
 using API.Application.Features.Business.Audit;
 using API.Application.Features.Business.Bootstrap.Services;
@@ -10,6 +11,7 @@ using API.Infrastructure.Common.Repositories;
 using API.Infrastructure.Common.Services;
 using API.Infrastructure.Context;
 using API.Infrastructure.Features.Authentication;
+using API.Infrastructure.Features.Authentication.Services;
 using API.Infrastructure.Features.Business.Audit;
 using API.Infrastructure.Features.Business.Audit.Services;
 using API.Infrastructure.Features.Business.Bootstrap;
@@ -101,6 +103,10 @@ namespace API.Infrastructure
             services.AddHostedService<AuditLogRetentionJob>();
 
             // ── Authentication & Security ────────────────────────────────────
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IJwtProvider, JwtProvider>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
+            services.AddTransient<IOtpHasher, OtpHasher>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             // ── Services ─────────────────────────────────────────────────────
