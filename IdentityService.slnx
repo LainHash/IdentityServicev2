@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="src/core/API.Application/API.Application.csproj" Id="b887bed8-704b-4dad-a770-60bdbe0c27ae" />
+    <Project Path="src/core/API.Domain/API.Domain.csproj" Id="d50f04f8-9f12-45ce-ab0c-cb053f4c7504" />
+  </Folder>
+  <Folder Name="/External/">
+    <Project Path="src/external/API.Infrastructure/API.Infrastructure.csproj" Id="67842afd-c4b1-419f-a813-9591a1a78546" />
+  </Folder>
+  <Folder Name="/Shared/">
+    <Project Path="src/shared/API.Contract/API.Contract.csproj" Id="9cc28dfe-5c5c-4067-8e80-f69b893508e5" />
+  </Folder>
+  <Project Path="src/IdentityAPI/IdentityAPI.csproj" />
+</Solution>
