@@ -9,5 +9,8 @@ namespace API.Contract.Settings
         public DatabaseSettings Database { get; init; } = new();
         public BootstrapSettings Bootstrap { get; init; } = new();
         public JwtSettings Jwt { get; init; } = new();
+        public GoogleAuthSettings GoogleAuth { get; init; } = new();
+        public EmailSettings Email { get; init; } = new();
+        public string OtpSecretKey { get; init; } = null!;
     }
 }

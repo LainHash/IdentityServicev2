@@ -1,4 +1,4 @@
-﻿using API.Application.Features.Authentication;
+﻿using API.Application.Features.Authentication.Services;
 using API.Application.Features.Business.Audit;
 using MediatR;
 
@@ -24,7 +24,7 @@ namespace API.Application.Behaviors
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
-            _auditContext.UserPublicId = _currentUser.UserPublicId;
+            _auditContext.UserPublicId = _currentUser.UserId;
             _auditContext.IpAddress = "";
 
             return await next(cancellationToken);

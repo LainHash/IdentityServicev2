@@ -1,7 +1,7 @@
-﻿using API.Domain.Common.Models.Results;
+using API.Domain.Common.Models.Results;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogAPI.Extensions
+namespace IdentityAPI.Extensions
 {
     public static class ResultExtensions
     {

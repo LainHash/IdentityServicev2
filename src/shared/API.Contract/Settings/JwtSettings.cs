@@ -1,11 +1,13 @@
-﻿namespace API.Contract.Settings
+namespace API.Contract.Settings
 {
     public sealed class JwtSettings
     {
         public string Issuer { get; init; } = string.Empty;
         public string Audience { get; init; } = string.Empty;
-        public int ExpiryMinutes { get; init; }
-        public string SecretKey { get; init; } = string.Empty;
-        public int RefreshTokenExpiryDays { get; init; }
+        public int ExpiryMinutes { get; init; } = 60;
+        public int RefreshTokenExpiryDays { get; init; } = 7;
+        public string KeyId { get; init; } = "identity-rsa-key-1";
+        public string PrivateKeyPath { get; init; } = "keys/private_key.pem";
+        public string? PrivateKeyPem { get; init; }
     }
 }

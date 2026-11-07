@@ -1,10 +1,15 @@
-﻿using DotNetEnv;
-using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 using API.Application;
+using API.Contract.Settings;
 using API.Infrastructure;
+using API.Infrastructure.Features.Authentication;
+using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
-namespace CatalogAPI
+namespace IdentityAPI
 {
     public static class DependencyInjection
     {
@@ -21,6 +26,44 @@ namespace CatalogAPI
                     new JsonStringEnumConverter());
             });
 
+            return services;
+        }
+
+        public static IServiceCollection AddJwtConfig(
+            this IServiceCollection services,
+            ConfigurationManager configuration)
+        {
+            var jwtSettings = configuration
+                .GetSection("Jwt")
+                .Get<JwtSettings>() ?? new JwtSettings();
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer();
+
+            services
+                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+                .Configure<RsaJwtKeyService>((options, keyService) =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = !string.IsNullOrWhiteSpace(jwtSettings.Issuer),
+                        ValidateAudience = !string.IsNullOrWhiteSpace(jwtSettings.Audience),
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings.Issuer,
+                        ValidAudience = jwtSettings.Audience,
+                        IssuerSigningKey = keyService.GetValidationKey(),
+                        RoleClaimType = ClaimTypes.Role,
+                        NameClaimType = ClaimTypes.NameIdentifier
+                    };
+                });
+
+            services.AddAuthorization();
 
             return services;
         }
@@ -32,7 +75,7 @@ namespace CatalogAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Catalog Service",
+                    Title = "Identity Service",
                     Version = "v1"
                 });
 
@@ -77,12 +120,90 @@ namespace CatalogAPI
                 var envPath = Path.Combine(searchDir, ".env");
                 if (File.Exists(envPath))
                 {
-                    Env.Load(envPath); break;
+                    Env.Load(envPath);
+                    break;
                 }
                 searchDir = Directory.GetParent(searchDir)?.FullName;
             }
 
             configuration.AddEnvironmentVariables();
+
+            return services;
+        }
+
+        public static IServiceCollection AddJwtConfig(
+            this IServiceCollection services,
+            ConfigurationManager configuration)
+        {
+            services.AddOptions<AuthCookieSettings>()
+                    .Bind(configuration.GetSection(AuthCookieSettings.SectionName));
+
+            var jwtSettings = configuration
+                .GetSection("Jwt")
+                .Get<JwtSettings>()
+                ?? throw new InvalidOperationException(
+                    "JwtSettings configuration is missing.");
+
+            if (jwtSettings is not null)
+            {
+                services
+                    .AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = jwtSettings.Issuer,
+                            ValidAudience = jwtSettings.Audience,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                System.Text.Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                        };
+                    });
+            }
+
+            services
+                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+                .Configure<IOptions<AuthCookieSettings>>((options, cookieOptions) =>
+                {
+                    var cookieName = cookieOptions.Value.AccessTokenCookieName;
+                    var events = options.Events ?? new JwtBearerEvents();
+                    var previous = events.OnMessageReceived;
+
+                    events.OnMessageReceived = async context =>
+                    {
+                        if (previous is not null)
+                        {
+                            await previous(context);
+                        }
+
+                        if (string.IsNullOrEmpty(context.Token)
+                            && !context.Request.Headers.ContainsKey("Authorization")
+                            && context.Request.Cookies.TryGetValue(cookieName, out var token)
+                            && !string.IsNullOrEmpty(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        if (string.IsNullOrEmpty(context.Token))
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                            {
+                                context.Token = accessToken;
+                            }
+                        }
+                    };
+
+                    options.Events = events;
+                });
 
             return services;
         }

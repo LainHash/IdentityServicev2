@@ -1,9 +1,9 @@
-using API.Application.Features.Authentication;
+using API.Application.Features.Authentication.Services;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace API.Infrastructure.Features.Authentication
+namespace API.Infrastructure.Features.Authentication.Services
 {
     internal class CurrentUserService : ICurrentUserService
     {
@@ -14,7 +14,7 @@ namespace API.Infrastructure.Features.Authentication
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Guid? UserPublicId
+        public Guid? UserId
         {
             get
             {

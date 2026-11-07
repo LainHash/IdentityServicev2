@@ -1,8 +1,8 @@
-namespace API.Application.Features.Authentication
+namespace API.Application.Features.Authentication.Services
 {
     public interface ICurrentUserService
     {
-        Guid? UserPublicId { get; }
+        Guid? UserId { get; }
 
         string? IpAddress { get; }
     }

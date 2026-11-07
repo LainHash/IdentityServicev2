@@ -1,14 +1,14 @@
-﻿using API.Application.Features.Business.Bootstrap.Commands.Seed;
+using API.Application.Features.Business.Bootstrap.Commands.Seed;
 using API.Application.Features.Business.Import.Commands.ImportExcel;
-using CatalogAPI.Extensions;
+using IdentityAPI.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogAPI.Controllers
+namespace IdentityAPI.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("api/identity")]
     public class GeneralController(IMediator mediator)
         : ControllerBase
     {

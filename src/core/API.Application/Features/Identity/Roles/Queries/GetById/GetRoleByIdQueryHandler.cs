@@ -1,0 +1,21 @@
+using API.Contract.DTOs.Identity.Roles;
+using API.Domain.Common.Models.Results;
+using MediatR;
+
+namespace API.Application.Features.Identity.Roles.Queries.GetById
+{
+    internal class GetRoleByIdQueryHandler(IRoleService roleService)
+        : IRequestHandler<GetRoleByIdQuery, Result<RoleDetailResponse>>
+    {
+        private readonly IRoleService _roleService = roleService;
+
+        public async Task<Result<RoleDetailResponse>> Handle(
+            GetRoleByIdQuery request,
+            CancellationToken cancellationToken)
+        {
+            var specification = new GetRoleByIdSpecification(request);
+            return await _roleService.GetByIdAsync(specification, cancellationToken);
+        }
+    }
+}
+

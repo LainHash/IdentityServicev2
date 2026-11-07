@@ -1,11 +1,13 @@
-﻿using API.Application.Features.Business.Audit.Queries.GetAll;
-using CatalogAPI.Extensions;
+using API.Application.Features.Business.Audit.Queries.GetAll;
+using IdentityAPI.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogAPI.Controllers.Business.Audit
+namespace IdentityAPI.Controllers.Business.Audit
 {
     [Route("api/[controller]")]
+    [Route("api/identity/audit-logs")]
     [ApiController]
     public class AuditLogsController(IMediator mediator) : ControllerBase
     {
