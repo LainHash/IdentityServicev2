@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
-using API.Application.Features.Authentication;
+using API.Application.Features.Authentication.Services;
 using API.Contract.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace API.Infrastructure.Features.Authentication
+namespace API.Infrastructure.Features.Authentication.Services
 {
     public sealed class RsaJwtKeyService : IJwtKeyService, IDisposable
     {
@@ -35,7 +35,6 @@ namespace API.Infrastructure.Features.Authentication
 
         private void LoadOrGeneratePrivateKey(JwtSettings jwtSettings)
         {
-            // 1. Ưu tiên đọc trực tiếp từ biến môi trường Jwt__PrivateKeyPem nếu có
             if (!string.IsNullOrWhiteSpace(jwtSettings.PrivateKeyPem))
             {
                 var pem = jwtSettings.PrivateKeyPem.Replace("\\n", "\n");
@@ -43,7 +42,6 @@ namespace API.Infrastructure.Features.Authentication
                 return;
             }
 
-            // 2. Đọc từ file PrivateKeyPath (nếu chưa có thì tự động sinh cặp khóa RSA 2048-bit)
             var relativePath = string.IsNullOrWhiteSpace(jwtSettings.PrivateKeyPath)
                 ? "keys/private_key.pem"
                 : jwtSettings.PrivateKeyPath;

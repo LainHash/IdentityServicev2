@@ -7,7 +7,7 @@ namespace IdentityAPI.Settings
         public string AccessTokenCookieName { get; init; } = "access_token";
         public string RefreshTokenCookieName { get; init; } = "refresh_token";
 
-        public string RefreshTokenPath { get; init; } = "/api/Authentication";
+        public string RefreshTokenPath { get; init; } = "/api/identity/Authentication";
         public string? Domain { get; init; }
         public SameSiteMode SameSite { get; init; } = SameSiteMode.Lax;
 

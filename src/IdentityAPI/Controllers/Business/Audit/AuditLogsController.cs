@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityAPI.Controllers.Business.Audit
 {
-    [Route("api/[controller]")]
-    [Route("api/identity/audit-logs")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    [Route("api/admin/identity/audit-logs")]
     [ApiController]
     public class AuditLogsController(IMediator mediator) : ControllerBase
     {

@@ -1,20 +1,24 @@
-using API.Application.Features.Authentication.Services;
-using API.Contract.Settings;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using API.Application.Features.Authentication.Services;
+using API.Contract.Settings;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Infrastructure.Features.Authentication.Services
 {
     internal class JwtProvider : IJwtProvider
     {
+        private readonly RsaJwtKeyService _keyService;
         private readonly JwtSettings _jwtSettings;
 
-        public JwtProvider(IOptions<AppSettings> options)
+        public JwtProvider(
+            RsaJwtKeyService keyService,
+            IOptions<AppSettings> options)
         {
+            _keyService = keyService;
             _jwtSettings = options.Value.Jwt;
         }
 
@@ -22,22 +26,30 @@ namespace API.Infrastructure.Features.Authentication.Services
         {
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.Name, userName),
-            new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim(ClaimTypes.Role, role)
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, userName),
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim(ClaimTypes.Role, role),
+                new Claim("role", role),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(
+                _keyService.GetSigningKey(),
+                SecurityAlgorithms.RsaSha256);
+
+            var expiryMinutes = _jwtSettings.ExpiryMinutes > 0
+                ? _jwtSettings.ExpiryMinutes
+                : 60;
 
             var token = new JwtSecurityToken(
-                _jwtSettings.Issuer,
-                _jwtSettings.Audience,
-                claims,
-                null,
-                DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
-                credentials);
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+                signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -64,13 +76,14 @@ namespace API.Infrastructure.Features.Authentication.Services
                 new Claim("purpose", "password_reset")
             };
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(
+                _keyService.GetSigningKey(),
+                SecurityAlgorithms.RsaSha256);
 
             var token = new JwtSecurityToken(
-                _jwtSettings.Issuer,
-                _jwtSettings.Audience,
-                claims,
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
                 notBefore: DateTime.UtcNow,
                 expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: credentials);
@@ -83,12 +96,10 @@ namespace API.Infrastructure.Features.Authentication.Services
             userId = 0;
             try
             {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = securityKey,
+                    IssuerSigningKey = _keyService.GetValidationKey(),
                     ValidateIssuer = true,
                     ValidIssuer = _jwtSettings.Issuer,
                     ValidateAudience = true,
@@ -104,7 +115,8 @@ namespace API.Infrastructure.Features.Authentication.Services
                 if (purposeClaim != "password_reset")
                     return false;
 
-                var subClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var subClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
                 if (!long.TryParse(subClaim, out userId))
                     return false;
 

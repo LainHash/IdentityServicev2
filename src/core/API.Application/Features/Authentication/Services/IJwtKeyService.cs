@@ -1,4 +1,4 @@
-namespace API.Application.Features.Authentication
+namespace API.Application.Features.Authentication.Services
 {
     public interface IJwtKeyService
     {

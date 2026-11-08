@@ -74,14 +74,14 @@ namespace API.Infrastructure.Features.Authentication
             if (user is null || !_passwordHasher.VerifyPassword(command.Body.Password, user.PasswordHash))
             {
                 return Result<AuthenticationResponse>.Fail(
-                    "Incorrect email, username, or password.", 
+                    "Incorrect email, username, or password.",
                     HttpStatusCode.Unauthorized);
             }
 
             if (!user.IsActive)
             {
                 return Result<AuthenticationResponse>.Fail(
-                    "Account is not active. Please verify your email.", 
+                    "Account is not active. Please verify your email.",
                     HttpStatusCode.PreconditionRequired);
             }
 
@@ -240,7 +240,7 @@ namespace API.Infrastructure.Features.Authentication
                 if (existingUser is not null)
                 {
                     return Result.Fail(
-                        "This email already used. Please use another email.", 
+                        "This email already used. Please use another email.",
                         HttpStatusCode.Conflict);
                 }
 
@@ -249,7 +249,7 @@ namespace API.Infrastructure.Features.Authentication
                 if (playerRole is null)
                 {
                     return Result.Fail(
-                        Error.NotFound("Role"), 
+                        Error.NotFound("Role"),
                         HttpStatusCode.InternalServerError);
                 }
 
@@ -266,7 +266,7 @@ namespace API.Infrastructure.Features.Authentication
                 await transaction.CommitAsync(cancellationToken);
 
                 return Result.Succeed(
-                    "Register successfully. Please check your account to get verification code.", 
+                    "Register successfully. Please check your account to get verification code.",
                     HttpStatusCode.Created);
             }
             catch (Exception ex)
