@@ -16,9 +16,6 @@ namespace IdentityAPI.Controllers.Authentication
         private readonly IJwtKeyService _keyService = keyService;
         private readonly JwtSettings _jwtSettings = appSettings.Value.Jwt;
 
-        /// <summary>
-        /// OpenID Connect Discovery Document (Cho phép các Microservice khác tự động tìm jwks_uri)
-        /// </summary>
         [HttpGet(".well-known/openid-configuration")]
         [HttpGet("api/identity/.well-known/openid-configuration")]
         public IActionResult GetOpenIdConfiguration()
@@ -37,9 +34,6 @@ namespace IdentityAPI.Controllers.Authentication
             return Ok(response);
         }
 
-        /// <summary>
-        /// JSON Web Key Set (JWKS - RFC 7517) chứa RSA Public Key để xác thực chữ ký JWT
-        /// </summary>
         [HttpGet(".well-known/jwks.json")]
         [HttpGet("api/identity/.well-known/jwks.json")]
         public IActionResult GetJwks()
@@ -57,9 +51,6 @@ namespace IdentityAPI.Controllers.Authentication
             return Ok(new JwksResponse([jwk]));
         }
 
-        /// <summary>
-        /// Phát hành RSA Public Key dưới định dạng PEM trực tiếp
-        /// </summary>
         [HttpGet("api/identity/keys/public")]
         public IActionResult GetPublicKeyPem()
         {

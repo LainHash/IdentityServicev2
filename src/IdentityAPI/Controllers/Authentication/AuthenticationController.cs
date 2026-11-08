@@ -16,9 +16,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 
-namespace IdentityAPI.Controllers
+namespace IdentityAPI.Controllers.Authentication
 {
-    [Route("api/[controller]")]
+    [Route("api/identity/[controller]")]
     [ApiController]
     public class AuthenticationController(
         IMediator mediator,
