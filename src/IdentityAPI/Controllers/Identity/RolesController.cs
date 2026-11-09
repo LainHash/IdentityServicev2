@@ -11,7 +11,6 @@ using IdentityAPI.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace IdentityAPI.Controllers.Identity
 {
