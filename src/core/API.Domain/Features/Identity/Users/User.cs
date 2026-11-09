@@ -1,8 +1,8 @@
 using API.Domain.Common.Entities;
 using API.Domain.Entities.Identity.OtpVerifications;
+using API.Domain.Features.Identity.PersonalProfiles;
 using API.Domain.Features.Identity.Roles;
 using API.Domain.Features.Identity.UserResfreshTokens;
-using API.Domain.Features.Identity.Users.Enums;
 
 namespace API.Domain.Features.Identity.Users
 {
@@ -16,8 +16,9 @@ namespace API.Domain.Features.Identity.Users
         public bool IsLocked { get; private set; }
 
         public long RoleId { get; private set; }
-
         public Role Role { get; private set; } = null!;
+
+        public PersonalProfile? PersonalProfile { get; private set; }
         public ICollection<UserRefreshToken> RefreshTokens { get; private set; } = [];
         public ICollection<OtpVerification> OtpVerifications { get; private set; } = [];
     }
