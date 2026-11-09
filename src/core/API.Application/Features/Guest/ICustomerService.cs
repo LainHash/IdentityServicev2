@@ -1,5 +1,6 @@
 using API.Application.Features.Guest.Queries.GetAll;
 using API.Application.Features.Guest.Queries.GetById;
+using API.Application.Features.Guest.Queries.GetByUserId;
 using API.Contract.DTOs.Guest.Customers;
 using API.Domain.Common.Models.Results;
 
@@ -13,6 +14,10 @@ namespace API.Application.Features.Guest
 
         Task<Result<CustomerDetailResponse>> GetByIdAsync(
             GetCustomerByIdSpecification specification,
+            CancellationToken cancellationToken = default);
+
+        Task<Result<CustomerDetailResponse>> GetByUserIdAsync(
+            GetCustomerByUserIdSpecification specification,
             CancellationToken cancellationToken = default);
     }
 }
