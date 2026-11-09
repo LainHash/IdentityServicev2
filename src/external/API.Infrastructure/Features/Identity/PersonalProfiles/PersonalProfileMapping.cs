@@ -1,4 +1,5 @@
-﻿using API.Domain.Features.Identity.PersonalProfiles;
+﻿using API.Contract.DTOs.Identity.PersonalProfiles;
+using API.Domain.Features.Identity.PersonalProfiles;
 using AutoMapper;
 
 namespace API.Infrastructure.Features.Identity.PersonalProfiles
@@ -7,13 +8,13 @@ namespace API.Infrastructure.Features.Identity.PersonalProfiles
     {
         public PersonalProfileMapping()
         {
-            //CreateMap<CompleteProfileRequest, PersonalProfile>();
+            CreateMap<CompleteProfileRequest, PersonalProfile>();
 
-            //CreateMap<PersonalProfile, PersonalProfileResponse>();
+            CreateMap<PersonalProfile, PersonalProfileResponse>();
 
-            //CreateMap<CreatePersonalProfileRequest, PersonalProfile>();
+            CreateMap<CreatePersonalProfileRequest, PersonalProfile>();
 
-            //CreateMap<UpdatePersonalProfileRequest, PersonalProfile>();
+            CreateMap<UpdatePersonalProfileRequest, PersonalProfile>();
         }
     }
 }
