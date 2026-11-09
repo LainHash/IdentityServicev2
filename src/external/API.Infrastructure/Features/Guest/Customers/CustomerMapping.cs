@@ -12,6 +12,9 @@ namespace API.Infrastructure.Features.Guest.Customers
         {
             CreateMap<Customer, CustomerResponse>()
                 .IncludeBase<AuditableEntity, AuditableResponse>();
+
+            CreateMap<Customer, CustomerDetailResponse>()
+                .IncludeBase<Customer, CustomerResponse>();
         }
     }
 }

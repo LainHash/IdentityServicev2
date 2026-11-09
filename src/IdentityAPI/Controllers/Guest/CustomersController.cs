@@ -1,4 +1,5 @@
 ﻿using API.Application.Features.Guest.Queries.GetAll;
+using API.Application.Features.Guest.Queries.GetById;
 using API.Domain.Common.Constants;
 using IdentityAPI.Extensions;
 using MediatR;
@@ -24,6 +25,17 @@ namespace IdentityAPI.Controllers.Guest
             [FromQuery] GetAllCustomersQuery query,
             CancellationToken cancellationToken)
         {
+            var result = await _mediator.Send(query, cancellationToken);
+            return this.ToActionResult(result);
+        }
+
+        [Authorize(Roles = $"{DefaultRoles.SuperAdmin},{DefaultRoles.Admin},{DefaultRoles.Manager}")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            var query = new GetCustomerByIdQuery(id);
             var result = await _mediator.Send(query, cancellationToken);
             return this.ToActionResult(result);
         }

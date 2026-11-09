@@ -20,7 +20,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Features\Guest\Commands\" />
-	  <Folder Include="Features\Guest\Queries\GetById\" />
 	</ItemGroup>
 
 </Project>

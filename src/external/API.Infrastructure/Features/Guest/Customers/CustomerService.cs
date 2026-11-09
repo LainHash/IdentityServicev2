@@ -1,10 +1,12 @@
 ﻿using API.Application.Features.Guest;
 using API.Application.Features.Guest.Queries.GetAll;
+using API.Application.Features.Guest.Queries.GetById;
 using API.Contract.DTOs.Guest.Customers;
 using API.Domain.Common.Models.Messages;
 using API.Domain.Common.Models.Results;
 using API.Domain.Features.Guest.Customers;
 using AutoMapper;
+using System.Net;
 
 namespace API.Infrastructure.Features.Guest.Customers
 {
@@ -35,6 +37,23 @@ namespace API.Infrastructure.Features.Guest.Customers
             var response = _mapper.Map<IEnumerable<CustomerResponse>>(customers);
             return PaginationResult<IEnumerable<CustomerResponse>>
                 .Succeed(response, Success.Retrieved("Customers"), totalItems, specification.Skip, specification.Take);
+        }
+
+        public async Task<Result<CustomerDetailResponse>> GetByIdAsync(
+            GetCustomerByIdSpecification specification, 
+            CancellationToken cancellationToken = default)
+        {
+            var customer = await _customerRepository
+                .FindAsync(specification, cancellationToken);
+            if(customer is null)
+            {
+                return Result<CustomerDetailResponse>
+                    .Fail(Error.NotFound("Customer"), HttpStatusCode.NotFound);
+            }
+
+            var response = _mapper.Map<CustomerDetailResponse>(customer);
+            return Result<CustomerDetailResponse>
+                .Succeed(response, Success.Retrieved("Customer"));
         }
     }
 }
