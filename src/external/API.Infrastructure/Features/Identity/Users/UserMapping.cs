@@ -16,6 +16,9 @@ namespace API.Infrastructure.Features.Identity.Users
                     opt => opt.MapFrom(src => src.Role.Name))
                 .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
+            CreateMap<User, UserDetailResponse>()
+                .IncludeBase<User, UserResponse>();
+
             CreateMap<RegisterRequest, User>();
 
             CreateMap<User, UserMinimalResponse>()

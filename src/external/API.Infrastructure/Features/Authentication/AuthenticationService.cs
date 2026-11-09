@@ -87,7 +87,7 @@ namespace API.Infrastructure.Features.Authentication
 
             var role = await _roleRepository
                 .FindByIdAsync(user.RoleId, cancellationToken);
-            var roleName = role?.Name ?? "Player";
+            var roleName = role?.Name ?? "Customer";
 
             var accessToken = _jwtProvider
                 .GenerateToken(user.PublicId, user.UserName, user.Email, roleName);
@@ -160,11 +160,11 @@ namespace API.Infrastructure.Features.Authentication
                 var user = await _userRepository.FindByEmailAsync(payload.Email, cancellationToken);
                 if (user is null)
                 {
-                    var playerRole = await _roleRepository.FindByNameAsync("Player", cancellationToken);
-                    if (playerRole is null)
+                    var customerRole = await _roleRepository.FindByNameAsync("Customer", cancellationToken);
+                    if (customerRole is null)
                     {
                         return Result<AuthenticationResponse>
-                            .Fail("Không tìm thấy vai trò khách hàng (Player).", HttpStatusCode.InternalServerError);
+                            .Fail("Không tìm thấy vai trò khách hàng (Customer).", HttpStatusCode.InternalServerError);
                     }
 
                     var rawPrefix = payload.Email.Split('@')[0];
@@ -186,7 +186,7 @@ namespace API.Infrastructure.Features.Authentication
                     }
 
                     var randomPasswordHash = _passwordHasher.HashPassword(Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"));
-                    user = User.Create(proposedUsername, payload.Email, randomPasswordHash, playerRole.Id, isActive: true);
+                    user = User.Create(proposedUsername, payload.Email, randomPasswordHash, customerRole.Id, isActive: true);
                     _userRepository.Add(user);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
@@ -199,7 +199,7 @@ namespace API.Infrastructure.Features.Authentication
                 }
 
                 var role = await _roleRepository.FindByIdAsync(user.RoleId, cancellationToken);
-                var roleName = role?.Name ?? "Player";
+                var roleName = role?.Name ?? "Customer";
 
                 var accessToken = _jwtProvider.GenerateToken(user.PublicId, user.UserName, user.Email, roleName);
                 var rawRefreshToken = _jwtProvider.GenerateRefreshToken();
@@ -244,9 +244,9 @@ namespace API.Infrastructure.Features.Authentication
                         HttpStatusCode.Conflict);
                 }
 
-                var playerRole = await _roleRepository
-                    .FindByNameAsync("Player", cancellationToken);
-                if (playerRole is null)
+                var customerRole = await _roleRepository
+                    .FindByNameAsync("Customer", cancellationToken);
+                if (customerRole is null)
                 {
                     return Result.Fail(
                         Error.NotFound("Role"),
@@ -255,7 +255,7 @@ namespace API.Infrastructure.Features.Authentication
 
                 var user = _mapper.Map<User>(command.Body)
                     .SetPasswordHash(_passwordHasher.HashPassword(command.Body.Password))
-                    .SetRole(playerRole.Id);
+                    .SetRole(customerRole.Id);
                 _userRepository.Add(user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -301,7 +301,7 @@ namespace API.Infrastructure.Features.Authentication
             }
 
             var role = await _roleRepository.FindByIdAsync(user.RoleId, cancellationToken);
-            var roleName = role?.Name ?? "Player";
+            var roleName = role?.Name ?? "Customer";
 
             storedToken.Revoke();
 

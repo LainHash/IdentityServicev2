@@ -9,6 +9,7 @@ namespace API.Application.Features.Identity.Users.Queries.GetById
         public GetUserByIdSpecification(GetUserByIdQuery query)
         {
             AddInclude(x => x.Role);
+            AddInclude(x => x.PersonalProfile!);
 
             AddCriteria(x => x.PublicId == query.Id);
         }

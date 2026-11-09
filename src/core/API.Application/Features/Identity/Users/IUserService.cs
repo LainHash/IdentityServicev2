@@ -17,7 +17,7 @@ namespace API.Application.Features.Identity.Users
             GetAllUsersSpecification specification,
             CancellationToken cancellationToken = default);
 
-        Task<Result<UserResponse>> GetByIdAsync(
+        Task<Result<UserDetailResponse>> GetByIdAsync(
             GetUserByIdSpecification specification,
             CancellationToken cancellationToken = default);
 

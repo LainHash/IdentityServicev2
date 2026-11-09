@@ -61,7 +61,7 @@ namespace API.Infrastructure.Features.Identity.Users
                 .Succeed(response, Success.Retrieved("Users"), totalItems, skip, take);
         }
 
-        public async Task<Result<UserResponse>> GetByIdAsync(
+        public async Task<Result<UserDetailResponse>> GetByIdAsync(
             GetUserByIdSpecification specification, 
             CancellationToken cancellationToken = default)
         {
@@ -69,12 +69,12 @@ namespace API.Infrastructure.Features.Identity.Users
                 .FindAsync(specification, cancellationToken);
             if(user is null)
             {
-                return Result<UserResponse>
+                return Result<UserDetailResponse>
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
-            var response = _mapper.Map<UserResponse>(user);
-            return Result<UserResponse>
+            var response = _mapper.Map<UserDetailResponse>(user);
+            return Result<UserDetailResponse>
                 .Succeed(response, Success.Retrieved("User"));
         }
 
