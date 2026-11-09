@@ -3,6 +3,8 @@ using API.Contract.Settings;
 using API.Domain.Entities.Identity.OtpVerifications;
 using API.Domain.Features.Business.Audit;
 using API.Domain.Features.Business.Configurations;
+using API.Domain.Features.Guest.CustomerLoyaltyTransactions;
+using API.Domain.Features.Guest.Customers;
 using API.Domain.Features.Identity.PersonalProfiles;
 using API.Domain.Features.Identity.Roles;
 using API.Domain.Features.Identity.UserResfreshTokens;
@@ -22,6 +24,9 @@ namespace API.Infrastructure.Context
         public DbSet<UserRefreshToken> UserRefreshTokens { get; set; } = null!;
         public DbSet<OtpVerification> OtpVerifications { get; set; } = null!;
         public DbSet<PersonalProfile> PersonalProfiles { get; set; } = null!;
+
+        public DbSet<Customer> Customers { get; set; } = null!;
+        public DbSet<CustomerLoyaltyTransaction> CustomerLoyaltyTransactions { get; set; } = null!;
 
         // ── IAuditContext injected via constructor ────────────────────────────
         private readonly IAuditContext _auditContext;

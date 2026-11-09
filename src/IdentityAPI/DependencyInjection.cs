@@ -160,6 +160,15 @@ namespace IdentityAPI
                                 context.Token = accessToken;
                             }
                         }
+
+                        if (!string.IsNullOrEmpty(context.Token))
+                        {
+                            context.Token = context.Token.Trim().Trim('"');
+                            if (context.Token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                context.Token = context.Token["Bearer ".Length..].Trim().Trim('"');
+                            }
+                        }
                     };
 
                     options.Events = events;
