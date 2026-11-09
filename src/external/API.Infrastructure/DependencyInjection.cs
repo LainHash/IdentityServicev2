@@ -6,6 +6,7 @@ using API.Application.Features.Business.Bootstrap.Services;
 using API.Application.Features.Business.Email;
 using API.Application.Features.Business.Import;
 using API.Application.Features.Identity.OtpVerifications;
+using API.Application.Features.Identity.PersonalProfiles;
 using API.Application.Features.Identity.Roles;
 using API.Application.Features.Identity.Users;
 using API.Contract.Settings;
@@ -23,6 +24,7 @@ using API.Infrastructure.Features.Business.Email;
 using API.Infrastructure.Features.Business.Email.Background;
 using API.Infrastructure.Features.Business.Import;
 using API.Infrastructure.Features.Identity.OtpVerifications;
+using API.Infrastructure.Features.Identity.PersonalProfiles;
 using API.Infrastructure.Features.Identity.Roles;
 using API.Infrastructure.Features.Identity.Users;
 using Microsoft.EntityFrameworkCore;
@@ -134,6 +136,7 @@ namespace API.Infrastructure
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IOtpVerificationService, OtpVerificationService>();
+            services.AddScoped<IPersonalProfileService, PersonalProfileService>();
 
             return services;
         }

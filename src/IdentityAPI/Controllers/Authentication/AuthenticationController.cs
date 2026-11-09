@@ -5,8 +5,10 @@ using API.Application.Features.Authentication.Commands.RefreshToken;
 using API.Application.Features.Authentication.Commands.Register;
 using API.Application.Features.Authentication.Services;
 using API.Application.Features.Identity.OtpVerifications.Commands.VerifyOtp;
+using API.Application.Features.Identity.PersonalProfiles.Commands.CompleteProfile;
 using API.Contract.DTOs.Authentication;
 using API.Contract.DTOs.Identity.OtpVerifications;
+using API.Contract.DTOs.Identity.PersonalProfiles;
 using API.Contract.Settings;
 using IdentityAPI.Extensions;
 using IdentityAPI.Settings;
@@ -83,6 +85,17 @@ namespace IdentityAPI.Controllers.Authentication
             CancellationToken cancellationToken = default)
         {
             var command = new VerifyOtpCommand(body);
+            var result = await _mediator.Send(command, cancellationToken);
+            return this.ToActionResult(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("complete-profile")]
+        public async Task<IActionResult> CompleteProfile(
+            [FromBody] CompleteProfileRequest body,
+            CancellationToken cancellationToken)
+        {
+            var command = new CompleteProfileCommand(body);
             var result = await _mediator.Send(command, cancellationToken);
             return this.ToActionResult(result);
         }
