@@ -20,6 +20,7 @@ using API.Application.Features.Authentication.Services;
 using API.Domain.Common.Models.Results;
 using API.Application.Features.Business;
 using Google.Apis.Auth;
+using API.Domain.Features.Guest.Customers;
 
 namespace API.Infrastructure.Features.Authentication
 {
@@ -28,6 +29,7 @@ namespace API.Infrastructure.Features.Authentication
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRefreshTokenRepository _userRefreshTokenRepository;
+        private readonly ICustomerRepository _customerRepository;
 
         private readonly IOtpVerificationService _otpVerificationService;
 
@@ -50,7 +52,8 @@ namespace API.Infrastructure.Features.Authentication
             IUnitOfWork unitOfWork,
             IRoleRepository roleRepository,
             IUserRefreshTokenRepository userRefreshTokenRepository,
-            IOtpVerificationService otpVerificationService)
+            IOtpVerificationService otpVerificationService,
+            ICustomerRepository customerRepository)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
@@ -63,6 +66,7 @@ namespace API.Infrastructure.Features.Authentication
             _roleRepository = roleRepository;
             _userRefreshTokenRepository = userRefreshTokenRepository;
             _otpVerificationService = otpVerificationService;
+            _customerRepository = customerRepository;
         }
 
         public async Task<Result<AuthenticationResponse>> LoginAsync(
@@ -139,32 +143,35 @@ namespace API.Infrastructure.Features.Authentication
             {
                 _logger.LogWarning(ex, "Invalid Google IdToken received.");
                 return Result<AuthenticationResponse>
-                    .Fail("Token Google không hợp lệ hoặc đã hết hạn.", HttpStatusCode.Unauthorized);
+                    .Fail("Invalid or outdated Google Token.", HttpStatusCode.Unauthorized);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error verifying Google IdToken.");
                 return Result<AuthenticationResponse>
-                    .Fail("Xác thực tài khoản Google thất bại.", HttpStatusCode.Unauthorized);
+                    .Fail("Fail to verify Google Token.", HttpStatusCode.Unauthorized);
             }
 
             if (payload is null || string.IsNullOrWhiteSpace(payload.Email))
             {
-                return Result<AuthenticationResponse>
-                    .Fail("Không thể lấy thông tin email từ tài khoản Google.", HttpStatusCode.BadRequest);
+                return Result<AuthenticationResponse>.Fail(
+                    "Fail to get Google information.", 
+                    HttpStatusCode.BadRequest);
             }
 
             await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                var user = await _userRepository.FindByEmailAsync(payload.Email, cancellationToken);
+                var user = await _userRepository
+                    .FindByEmailAsync(payload.Email, cancellationToken);
                 if (user is null)
                 {
-                    var customerRole = await _roleRepository.FindByNameAsync("Customer", cancellationToken);
+                    var customerRole = await _roleRepository
+                        .FindByNameAsync("Customer", cancellationToken);
                     if (customerRole is null)
                     {
                         return Result<AuthenticationResponse>
-                            .Fail("Không tìm thấy vai trò khách hàng (Customer).", HttpStatusCode.InternalServerError);
+                            .Fail(Error.NotFound("Customer Role"), HttpStatusCode.InternalServerError);
                     }
 
                     var rawPrefix = payload.Email.Split('@')[0];
@@ -189,6 +196,11 @@ namespace API.Infrastructure.Features.Authentication
                     user = User.Create(proposedUsername, payload.Email, randomPasswordHash, customerRole.Id, isActive: true);
                     _userRepository.Add(user);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    var customer = new Customer(user.Id);
+                    _customerRepository.Add(customer);
+
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
                 else
                 {
@@ -198,7 +210,8 @@ namespace API.Infrastructure.Features.Authentication
                     }
                 }
 
-                var role = await _roleRepository.FindByIdAsync(user.RoleId, cancellationToken);
+                var role = await _roleRepository
+                    .FindByIdAsync(user.RoleId, cancellationToken);
                 var roleName = role?.Name ?? "Customer";
 
                 var accessToken = _jwtProvider.GenerateToken(user.PublicId, user.UserName, user.Email, roleName);
@@ -217,14 +230,14 @@ namespace API.Infrastructure.Features.Authentication
 
                 var response = new AuthenticationResponse(user, accessToken, rawRefreshToken);
                 return Result<AuthenticationResponse>
-                    .Succeed(response, "Đăng nhập Google thành công.");
+                    .Succeed(response, "Google login successfully.");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 _logger.LogError(ex, "Google login failed for email {Email}", payload.Email);
                 return Result<AuthenticationResponse>
-                    .Fail("Đăng nhập bằng tài khoản Google không thành công.", HttpStatusCode.InternalServerError);
+                    .Fail("Fail to login with Google.", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -260,6 +273,11 @@ namespace API.Infrastructure.Features.Authentication
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+                var customer = new Customer(user.Id);
+                _customerRepository.Add(customer);
+
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
                 await _otpVerificationService
                     .InitializeAsync(user, cancellationToken);
 
@@ -285,7 +303,8 @@ namespace API.Infrastructure.Features.Authentication
             CancellationToken cancellationToken = default)
         {
             var tokenHash = _jwtProvider.HashToken(command.Body.RefreshToken);
-            var storedToken = await _userRefreshTokenRepository.FindActiveByTokenHashAsync(tokenHash, cancellationToken);
+            var storedToken = await _userRefreshTokenRepository
+                .FindActiveByTokenHashAsync(tokenHash, cancellationToken);
 
             if (storedToken is null || !storedToken.IsActive)
             {
@@ -293,14 +312,17 @@ namespace API.Infrastructure.Features.Authentication
                     .Fail("Invalid or expired refresh token.", HttpStatusCode.Unauthorized);
             }
 
-            var user = await _userRepository.FindByIdWithRoleAsync(storedToken.User.PublicId, cancellationToken);
+            var user = await _userRepository
+                .FindByIdWithRoleAsync(storedToken.User.PublicId, cancellationToken);
             if (user is null || !user.IsActive)
             {
-                return Result<AuthenticationResponse>
-                    .Fail("User not found or account is inactive.", HttpStatusCode.Unauthorized);
+                return Result<AuthenticationResponse>.Fail(
+                    "User not found or account is inactive.", 
+                    HttpStatusCode.Unauthorized);
             }
 
-            var role = await _roleRepository.FindByIdAsync(user.RoleId, cancellationToken);
+            var role = await _roleRepository
+                .FindByIdAsync(user.RoleId, cancellationToken);
             var roleName = role?.Name ?? "Customer";
 
             storedToken.Revoke();
