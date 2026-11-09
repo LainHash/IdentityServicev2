@@ -1,4 +1,5 @@
 using API.Application.Features.Authentication.Services;
+using API.Application.Features.Identity.PersonalProfiles.Commands.UpdateByOwner;
 using API.Application.Features.Identity.Roles.Queries.GetAll;
 using API.Application.Features.Identity.Users.Commands.ChangePassword;
 using API.Application.Features.Identity.Users.Commands.Delete;
@@ -8,6 +9,7 @@ using API.Application.Features.Identity.Users.Commands.ToggleActive;
 using API.Application.Features.Identity.Users.Commands.ToggleLock;
 using API.Application.Features.Identity.Users.Queries.GetAll;
 using API.Application.Features.Identity.Users.Queries.GetById;
+using API.Contract.DTOs.Identity.PersonalProfiles;
 using API.Contract.DTOs.Identity.Users;
 using API.Domain.Common.Constants;
 using IdentityAPI.Extensions;
@@ -36,6 +38,18 @@ namespace IdentityAPI.Controllers.Identity
             var userId = _currentUserService.UserId;
             var query = new GetUserByIdQuery(userId!.Value);
             var result = await _mediator.Send(query, cancellationToken);
+            return this.ToActionResult(result);
+        }
+
+        [Authorize]
+        [HttpPut("me/profile")]
+        public async Task<IActionResult> UpdateProfile(
+            [FromBody] UpdatePersonalProfileRequest body,
+            CancellationToken cancellationToken)
+        {
+            var userId = _currentUserService.UserId;
+            var command = new UpdatePersonalProfileCommand(userId!.Value, body);
+            var result = await _mediator.Send(command, cancellationToken);
             return this.ToActionResult(result);
         }
 
