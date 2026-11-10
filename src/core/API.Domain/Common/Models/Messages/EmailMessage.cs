@@ -35,6 +35,27 @@ namespace API.Domain.Common.Models.Messages
             };
         }
 
+        public static EmailMessage Create(string subject, string body)
+        {
+            return new EmailMessage
+            {
+                Subject = subject,
+                Body = body
+            };
+        }
+
+        public static EmailMessage ForContactConfirmation(string fullName, string messageSubject)
+        {
+            return new EmailMessage
+            {
+                Subject = $"[Restaurant] Xác nhận tiếp nhận thông tin: {messageSubject}",
+                Body = $"<p>Xin chào <b>{fullName}</b>,</p>"
+                     + $"<p>Cảm ơn bạn đã liên hệ với nhà hàng chúng tôi. Chúng tôi đã nhận được thông điệp của bạn về chủ đề: <i>{messageSubject}</i>.</p>"
+                     + $"<p>Đội ngũ hỗ trợ của chúng tôi sẽ xem xét và phản hồi bạn trong thời gian sớm nhất.</p>"
+                     + $"<br/><p>Trân trọng,<br/>Đội ngũ Hỗ trợ Khách hàng Restaurant</p>"
+            };
+        }
+
 
     }
 }

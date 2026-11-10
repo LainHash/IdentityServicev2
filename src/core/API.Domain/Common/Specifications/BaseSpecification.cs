@@ -92,5 +92,35 @@ namespace API.Domain.Common.Specifications
             Take = pageSize;
             IsPagingEnabled = true;
         }
+
+        protected void ApplyDateRange(
+            DateTime? from,
+            DateTime? to,
+            Expression<Func<TEntity, DateTime>> dateSelector)
+        {
+            var parameter = dateSelector.Parameters[0];
+            var body = dateSelector.Body;
+            Expression? rangeExpression = null;
+
+            if (from.HasValue)
+            {
+                var fromConstant = Expression.Constant(from.Value, typeof(DateTime));
+                rangeExpression = Expression.GreaterThanOrEqual(body, fromConstant);
+            }
+
+            if (to.HasValue)
+            {
+                var toConstant = Expression.Constant(to.Value, typeof(DateTime));
+                var lessThanOrEqual = Expression.LessThanOrEqual(body, toConstant);
+                rangeExpression = rangeExpression is null
+                    ? lessThanOrEqual
+                    : Expression.AndAlso(rangeExpression, lessThanOrEqual);
+            }
+
+            if (rangeExpression is not null)
+            {
+                AddCriteria(Expression.Lambda<Func<TEntity, bool>>(rangeExpression, parameter));
+            }
+        }
     }
 }
