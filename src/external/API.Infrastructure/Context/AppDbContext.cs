@@ -9,6 +9,9 @@ using API.Domain.Features.Identity.PersonalProfiles;
 using API.Domain.Features.Identity.Roles;
 using API.Domain.Features.Identity.UserResfreshTokens;
 using API.Domain.Features.Identity.Users;
+using API.Domain.Features.Personnel.Departments;
+using API.Domain.Features.Personnel.Employees;
+using API.Domain.Features.Personnel.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -27,6 +30,10 @@ namespace API.Infrastructure.Context
 
         public DbSet<Customer> Customers { get; set; } = null!;
         public DbSet<CustomerLoyaltyTransaction> CustomerLoyaltyTransactions { get; set; } = null!;
+
+        public DbSet<Department> Departments { get; set; } = null!;
+        public DbSet<Position> Positions { get; set; } = null!;
+        public DbSet<Employee> Employees { get; set; } = null!;
 
         // ── IAuditContext injected via constructor ────────────────────────────
         private readonly IAuditContext _auditContext;

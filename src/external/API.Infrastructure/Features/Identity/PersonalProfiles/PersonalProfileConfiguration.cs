@@ -18,6 +18,8 @@ namespace API.Infrastructure.Features.Identity.PersonalProfiles
 
             builder.Property(x => x.PublicId)
                 .IsRequired();
+            builder.HasIndex(x => x.PublicId)
+                .IsUnique();
 
             builder.Property(x => x.FirstName)
                 .IsRequired()
