@@ -1,4 +1,4 @@
-﻿using API.Application.Features.Business;
+using API.Application.Features.Business;
 using API.Application.Features.Identity.PersonalProfiles;
 using API.Application.Features.Identity.PersonalProfiles.Commands.CompleteProfile;
 using API.Application.Features.Identity.PersonalProfiles.Commands.UpdateByOwner;
@@ -43,10 +43,16 @@ namespace API.Infrastructure.Features.Identity.PersonalProfiles
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
+            if (!user.IsConfirmed)
+            {
+                return Result
+                    .Fail("Account is not confirmed. Please verify your email first.", HttpStatusCode.PreconditionRequired);
+            }
+
             if (!user.IsActive)
             {
                 return Result
-                    .Fail("Account is not active. Please verify your email first.", HttpStatusCode.PreconditionRequired);
+                    .Fail("Account is inactive. Please contact administrator.", HttpStatusCode.Forbidden);
             }
 
             var personalProfile = await _personalProfileRepository

@@ -82,11 +82,25 @@ namespace API.Infrastructure.Features.Authentication
                     HttpStatusCode.Unauthorized);
             }
 
+            if (!user.IsConfirmed)
+            {
+                return Result<AuthenticationResponse>.Fail(
+                    "Account is not confirmed. Please verify your email first.",
+                    HttpStatusCode.PreconditionRequired);
+            }
+
             if (!user.IsActive)
             {
                 return Result<AuthenticationResponse>.Fail(
-                    "Account is not active. Please verify your email.",
-                    HttpStatusCode.PreconditionRequired);
+                    "Account is inactive. Please contact administrator.",
+                    HttpStatusCode.Forbidden);
+            }
+
+            if (user.IsLocked)
+            {
+                return Result<AuthenticationResponse>.Fail(
+                    "Account is locked.",
+                    HttpStatusCode.Forbidden);
             }
 
             var role = await _roleRepository
@@ -193,7 +207,7 @@ namespace API.Infrastructure.Features.Authentication
                     }
 
                     var randomPasswordHash = _passwordHasher.HashPassword(Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N"));
-                    user = User.Create(proposedUsername, payload.Email, randomPasswordHash, customerRole.Id, isActive: true);
+                    user = User.Create(proposedUsername, payload.Email, randomPasswordHash, customerRole.Id, isActive: true, isConfirmed: true);
                     _userRepository.Add(user);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -204,9 +218,23 @@ namespace API.Infrastructure.Features.Authentication
                 }
                 else
                 {
+                    if (!user.IsConfirmed)
+                    {
+                        user.SetConfirmed(true);
+                    }
+
                     if (!user.IsActive)
                     {
-                        user.SetActive(true);
+                        return Result<AuthenticationResponse>.Fail(
+                            "Account is inactive. Please contact administrator.",
+                            HttpStatusCode.Forbidden);
+                    }
+
+                    if (user.IsLocked)
+                    {
+                        return Result<AuthenticationResponse>.Fail(
+                            "Account is locked.",
+                            HttpStatusCode.Forbidden);
                     }
                 }
 
@@ -268,7 +296,9 @@ namespace API.Infrastructure.Features.Authentication
 
                 var user = _mapper.Map<User>(command.Body)
                     .SetPasswordHash(_passwordHasher.HashPassword(command.Body.Password))
-                    .SetRole(customerRole.Id);
+                    .SetRole(customerRole.Id)
+                    .SetActive(true)
+                    .SetConfirmed(false);
                 _userRepository.Add(user);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

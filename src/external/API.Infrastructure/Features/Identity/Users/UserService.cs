@@ -117,7 +117,7 @@ namespace API.Infrastructure.Features.Identity.Users
                     .Fail(Error.NotFound("User"), HttpStatusCode.NotFound);
             }
 
-            if (!user.IsActive)
+            if (!user.IsConfirmed)
             {
                 _userRepository.Remove(user);
             }

@@ -12,6 +12,7 @@ namespace API.Domain.Features.Identity.Users
         public string Email { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
 
+        public bool IsConfirmed { get; private set; }
         public bool IsActive { get; private set; }
         public bool IsLocked { get; private set; }
 
@@ -27,31 +28,51 @@ namespace API.Domain.Features.Identity.Users
     {
         public User() { }
 
-        public User(string userName, string email, string passwordHash, long roleId, bool isActive)
+        public User(
+            string userName, 
+            string email, 
+            string passwordHash, 
+            long roleId, 
+            bool isActive = true, 
+            bool isConfirmed = false)
         {
             UserName = userName;
             Email = email;
             PasswordHash = passwordHash;
             RoleId = roleId;
             IsActive = isActive;
+            IsConfirmed = isConfirmed;
         }
 
-        public static User Create(string userName, string email, string passwordHash, long roleId, bool isActive = true)
+        public static User Create(
+            string userName, 
+            string email, 
+            string passwordHash, 
+            long roleId, 
+            bool isActive = true, 
+            bool isConfirmed = false)
         {
-            return new User(userName, email, passwordHash, roleId, isActive);
+            return new User(userName, email, passwordHash, roleId, isActive, isConfirmed);
         }
 
         public static User CreateForEmployee(string userName, string email, string passwordHash, long roleId)
         {
-            return new User(userName, email, passwordHash, roleId, true);
+            return new User(userName, email, passwordHash, roleId, isActive: true, isConfirmed: true);
         }
 
-        public User UpdateDetails(string userName, string email, long roleId, bool isActive)
+        public User UpdateDetails(string userName, string email, long roleId, bool isActive, bool isConfirmed)
         {
             UserName = userName;
             Email = email;
             RoleId = roleId;
             IsActive = isActive;
+            IsConfirmed = isConfirmed;
+            return this;
+        }
+
+        public User SetConfirmed(bool isConfirmed)
+        {
+            IsConfirmed = isConfirmed;
             return this;
         }
 
@@ -93,7 +114,7 @@ namespace API.Domain.Features.Identity.Users
 
         public void CompleteVerification()
         {
-            IsActive = true;
+            IsConfirmed = true;
         }
     }
 }

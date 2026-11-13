@@ -73,7 +73,8 @@ namespace API.Infrastructure.Features.Business.Bootstrap.Seeders
                 email: settings.AdminEmail,
                 passwordHash: passwordHash,
                 roleId: superAdminRole.Id,
-                isActive: true
+                isActive: true,
+                isConfirmed: true
             );
 
             _userRepository.Add(superAdminUser);

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using API.Domain.Features.Identity.Users;
 
@@ -33,9 +33,13 @@ namespace API.Infrastructure.Features.Identity.Users
                 .IsRequired()
                 .HasMaxLength(255);
 
-            builder.Property(x => x.IsActive)
+            builder.Property(x => x.IsConfirmed)
                 .IsRequired()
                 .HasDefaultValue(false);
+
+            builder.Property(x => x.IsActive)
+                .IsRequired()
+                .HasDefaultValue(true);
 
             builder.Property(x => x.IsLocked)
                 .IsRequired()
