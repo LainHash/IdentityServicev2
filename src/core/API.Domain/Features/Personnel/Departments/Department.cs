@@ -15,6 +15,21 @@ namespace API.Domain.Features.Personnel.Departments
 
     public partial class Department
     {
-        private Department() { }
+        public Department() { }
+
+        public Department(string name, string departmentCode, string? description = null)
+        {
+            Name = name;
+            DepartmentCode = departmentCode;
+            Description = description;
+        }
+
+        public Department Update(string name, string departmentCode, string? description = null)
+        {
+            Name = name;
+            DepartmentCode = departmentCode;
+            Description = description;
+            return this;
+        }
     }
 }
