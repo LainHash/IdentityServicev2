@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+using API.Application.Features.Identity.PersonalProfiles.Validators;
+using FluentValidation;
 
 namespace API.Application.Features.Identity.PersonalProfiles.Commands.CompleteProfile
 {
@@ -19,16 +20,8 @@ namespace API.Application.Features.Identity.PersonalProfiles.Commands.CompletePr
                 .NotEmpty().WithMessage("Date of Birth is required.");
 
             RuleFor(x => x.Body.Address)
-                .NotEmpty().WithMessage("Address is required.")
-                .MaximumLength(200).WithMessage("Address must not exceed 200 characters.");
-
-            RuleFor(x => x.Body.City)
-                .NotEmpty().WithMessage("City is required.")
-                .MaximumLength(100).WithMessage("City must not exceed 100 characters.");
-
-            RuleFor(x => x.Body.Country)
-                .NotEmpty().WithMessage("Country is required.")
-                .MaximumLength(100).WithMessage("Country must not exceed 100 characters.");
+                .NotNull().WithMessage("Address is required.")
+                .SetValidator(new AddressValidator());
 
             RuleFor(x => x.Body.Phone)
                 .NotEmpty().WithMessage("Phone number is required.")

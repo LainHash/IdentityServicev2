@@ -1,4 +1,4 @@
-﻿using API.Domain.Features.Identity.PersonalProfiles;
+using API.Domain.Features.Identity.PersonalProfiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -35,17 +35,47 @@ namespace API.Infrastructure.Features.Identity.PersonalProfiles
             builder.Property(x => x.Gender)
                 .IsRequired();
 
-            builder.Property(x => x.Address)
-                .IsRequired()
-                .HasMaxLength(200);
+            builder.OwnsOne(x => x.Address, addressBuilder =>
+            {
+                addressBuilder.Property(a => a.Street)
+                    .HasColumnName("Address_Street")
+                    .HasMaxLength(200)
+                    .IsRequired();
 
-            builder.Property(x => x.City)
-                .IsRequired()
-                .HasMaxLength(100);
+                addressBuilder.Property(a => a.Ward)
+                    .HasColumnName("Address_Ward")
+                    .HasMaxLength(100);
 
-            builder.Property(x => x.Country)
-                .IsRequired()
-                .HasMaxLength(100);
+                addressBuilder.Property(a => a.District)
+                    .HasColumnName("Address_District")
+                    .HasMaxLength(100);
+
+                addressBuilder.Property(a => a.Province)
+                    .HasColumnName("Address_Province")
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                addressBuilder.Property(a => a.Country)
+                    .HasColumnName("Address_Country")
+                    .HasMaxLength(50)
+                    .HasDefaultValue("Vietnam")
+                    .IsRequired();
+
+                addressBuilder.Property(a => a.FullAddress)
+                    .HasColumnName("Address_FullAddress")
+                    .HasMaxLength(500);
+
+                addressBuilder.Property(a => a.Latitude)
+                    .HasColumnName("Address_Latitude")
+                    .HasPrecision(9, 6);
+
+                addressBuilder.Property(a => a.Longitude)
+                    .HasColumnName("Address_Longitude")
+                    .HasPrecision(9, 6);
+
+                addressBuilder.Property(a => a.AdministrativeDivisionPublicId)
+                    .HasColumnName("Address_AdministrativeDivisionPublicId");
+            });
 
             builder.Property(x => x.Phone)
                 .IsRequired()

@@ -1,4 +1,5 @@
 using API.Domain.Common.Entities;
+using API.Domain.Features.Identity.PersonalProfiles.ValueObjects;
 using API.Domain.Features.Identity.Users;
 
 namespace API.Domain.Features.Identity.PersonalProfiles
@@ -11,9 +12,7 @@ namespace API.Domain.Features.Identity.PersonalProfiles
         public DateOnly DateOfBirth { get; private set; }
         public bool Gender { get; private set; }
 
-        public string Address { get; private set; } = string.Empty;
-        public string City { get; private set; } = string.Empty;
-        public string Country { get; private set; } = string.Empty;
+        public Address Address { get; private set; } = new();
 
         public string Phone { get; private set; } = string.Empty;
         public string CitizenCardId { get; private set; } = string.Empty;
@@ -35,9 +34,7 @@ namespace API.Domain.Features.Identity.PersonalProfiles
             string lastName,
             DateOnly dateOfBirth,
             bool gender,
-            string address,
-            string city,
-            string country,
+            Address address,
             string phone,
             string citizenCardId,
             long userId)
@@ -46,9 +43,7 @@ namespace API.Domain.Features.Identity.PersonalProfiles
             LastName = lastName;
             DateOfBirth = dateOfBirth;
             Gender = gender;
-            Address = address;
-            City = city;
-            Country = country;
+            Address = address ?? new Address();
             Phone = phone;
             CitizenCardId = citizenCardId;
             UserId = userId;
@@ -59,9 +54,7 @@ namespace API.Domain.Features.Identity.PersonalProfiles
             string lastName,
             DateOnly dateOfBirth,
             bool gender,
-            string address,
-            string city,
-            string country,
+            Address address,
             string phone,
             string citizenCardId)
         {
@@ -69,11 +62,15 @@ namespace API.Domain.Features.Identity.PersonalProfiles
             LastName = lastName;
             DateOfBirth = dateOfBirth;
             Gender = gender;
-            Address = address;
-            City = city;
-            Country = country;
+            Address = address ?? new Address();
             Phone = phone;
             CitizenCardId = citizenCardId;
+            return this;
+        }
+
+        public PersonalProfile SetAddress(Address address)
+        {
+            Address = address ?? new Address();
             return this;
         }
 
