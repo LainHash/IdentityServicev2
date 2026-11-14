@@ -28,7 +28,7 @@ namespace API.Infrastructure.Features.Personnel.Departments
             builder.HasIndex(x => x.Name)
                 .IsUnique();
 
-            builder.HasIndex(x => x.DepartmentCode)
+            builder.HasIndex(x => x.Code)
                 .IsUnique();
 
             builder.Property(x => x.Description)

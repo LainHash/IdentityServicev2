@@ -22,11 +22,30 @@ namespace API.Infrastructure.Features.Personnel.Departments
                 .FirstOrDefaultAsync(x => x.PublicId == id, cancellationToken);
         }
 
-        public async Task<bool> IsExistingNameAsync(Guid id, string name, CancellationToken cancellationToken = default)
+        public async Task<bool> IsExistingNameAsync(Guid? excludePublicId, string name, CancellationToken cancellationToken = default)
         {
-            return await _context.Departments
-                .Where(x => x.PublicId != id)
-                .AnyAsync(x => EF.Functions.ILike(x.Name, name), cancellationToken);
+            var query = _context.Departments.AsQueryable();
+            if (excludePublicId.HasValue)
+            {
+                query = query.Where(x => x.PublicId != excludePublicId.Value);
+            }
+            return await query.AnyAsync(x => EF.Functions.ILike(x.Name, name.Trim()), cancellationToken);
+        }
+
+        public async Task<bool> IsExistingCodeAsync(Guid? excludePublicId, string code, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Departments.AsQueryable();
+            if (excludePublicId.HasValue)
+            {
+                query = query.Where(x => x.PublicId != excludePublicId.Value);
+            }
+            return await query.AnyAsync(x => EF.Functions.ILike(x.Code, code.Trim()), cancellationToken);
+        }
+
+        public async Task<bool> HasActivePositionsAsync(long departmentId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Positions
+                .AnyAsync(x => x.DepartmentId == departmentId && !x.IsDeleted, cancellationToken);
         }
 
         public async Task<HashSet<string>> GetExistingNamesAsync(

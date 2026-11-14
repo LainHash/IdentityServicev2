@@ -50,8 +50,8 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
             var departments = await _departmentRepository.ToListAsync(cancellationToken);
             foreach (var dept in departments)
             {
-                if (!string.IsNullOrWhiteSpace(dept.DepartmentCode))
-                    _departmentByCode[dept.DepartmentCode] = dept;
+                if (!string.IsNullOrWhiteSpace(dept.Code))
+                    _departmentByCode[dept.Code] = dept;
                 if (!string.IsNullOrWhiteSpace(dept.Name))
                     _departmentByName[dept.Name] = dept;
             }
@@ -61,8 +61,8 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
             {
                 if (!string.IsNullOrWhiteSpace(pos.Name))
                     _existingNames.Add(pos.Name);
-                if (!string.IsNullOrWhiteSpace(pos.PositionCode))
-                    _existingCodes.Add(pos.PositionCode);
+                if (!string.IsNullOrWhiteSpace(pos.Code))
+                    _existingCodes.Add(pos.Code);
                 if (pos.PublicId != Guid.Empty)
                     _existingPublicIds.Add(pos.PublicId);
             }
@@ -87,7 +87,7 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
                 return Task.CompletedTask;
             }
 
-            var code = row.PositionCode?.Trim();
+            var code = row.Code?.Trim();
             if (string.IsNullOrWhiteSpace(code))
             {
                 result.AddError(rowIndex, "PositionCode is required and must not be empty.");
@@ -118,7 +118,6 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
                 return Task.CompletedTask;
             }
 
-            // Resolve Department
             Department? department = null;
             var deptCode = row.DepartmentCode?.Trim();
             var deptName = row.DepartmentName?.Trim();

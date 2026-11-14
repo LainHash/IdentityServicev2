@@ -1,7 +1,9 @@
 using API.Application.Features.Business;
 using API.Contract.DTOs.Business.Import;
 using API.Contract.ImportDataRows.Identity;
+using API.Domain.Common.Entities;
 using API.Domain.Features.Personnel.Departments;
+using AutoMapper;
 
 namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
 {
@@ -43,8 +45,8 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
             {
                 if (!string.IsNullOrWhiteSpace(dept.Name))
                     _existingNames.Add(dept.Name);
-                if (!string.IsNullOrWhiteSpace(dept.DepartmentCode))
-                    _existingCodes.Add(dept.DepartmentCode);
+                if (!string.IsNullOrWhiteSpace(dept.Code))
+                    _existingCodes.Add(dept.Code);
                 if (dept.PublicId != Guid.Empty)
                     _existingPublicIds.Add(dept.PublicId);
             }
@@ -69,7 +71,7 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
                 return Task.CompletedTask;
             }
 
-            var code = row.DepartmentCode?.Trim();
+            var code = row.Code?.Trim();
             if (string.IsNullOrWhiteSpace(code))
             {
                 result.AddError(rowIndex, "DepartmentCode is required and must not be empty.");
@@ -119,7 +121,7 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
 
             if (row.PublicId != Guid.Empty)
             {
-                typeof(API.Domain.Common.Entities.Entity)
+                typeof(Entity)
                     .GetProperty(nameof(department.PublicId))?
                     .SetValue(department, row.PublicId);
             }

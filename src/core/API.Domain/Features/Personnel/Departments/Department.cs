@@ -8,7 +8,7 @@ namespace API.Domain.Features.Personnel.Departments
         public string Name { get; private set; } = null!;
         public string? Description { get; private set; }
 
-        public string DepartmentCode { get; private set; } = null!;
+        public string Code { get; private set; } = null!;
 
         public ICollection<Position> Positions { get; private set; } = [];
     }
@@ -20,14 +20,14 @@ namespace API.Domain.Features.Personnel.Departments
         public Department(string name, string departmentCode, string? description = null)
         {
             Name = name;
-            DepartmentCode = departmentCode;
+            Code = departmentCode;
             Description = description;
         }
 
         public Department Update(string name, string departmentCode, string? description = null)
         {
             Name = name;
-            DepartmentCode = departmentCode;
+            Code = departmentCode;
             Description = description;
             return this;
         }

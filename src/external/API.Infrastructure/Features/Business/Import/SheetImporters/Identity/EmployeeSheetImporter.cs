@@ -71,8 +71,8 @@ namespace API.Infrastructure.Features.Business.Import.SheetImporters.Identity
             var positions = await _positionRepository.ToListAsync(cancellationToken);
             foreach (var pos in positions)
             {
-                if (!string.IsNullOrWhiteSpace(pos.PositionCode))
-                    _positionByCode[pos.PositionCode] = pos;
+                if (!string.IsNullOrWhiteSpace(pos.Code))
+                    _positionByCode[pos.Code] = pos;
                 if (!string.IsNullOrWhiteSpace(pos.Name))
                     _positionByName[pos.Name] = pos;
                 if (pos.PublicId != Guid.Empty)
