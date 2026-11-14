@@ -10,10 +10,7 @@ namespace API.Application.Features.Personnel.Employees.Queries.GetAll
     {
         public GetAllEmployeesSpecification(GetAllEmployeesQuery query)
         {
-            AddIncludeAggregator(x => x
-                .Include(e => e.Position)
-                .Include(e => e.User)
-                    .ThenInclude(u => u.PersonalProfile));
+            AddInclude(x => x.Position);
 
             if (!string.IsNullOrEmpty(query.Keyword))
             {
