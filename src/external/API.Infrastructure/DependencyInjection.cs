@@ -11,6 +11,7 @@ using API.Application.Features.Identity.PersonalProfiles;
 using API.Application.Features.Identity.Roles;
 using API.Application.Features.Identity.Users;
 using API.Application.Features.Personnel.Departments;
+using API.Application.Features.Personnel.Employees;
 using API.Application.Features.Personnel.Positions;
 using API.Contract.Settings;
 using API.Domain.Common.Repositories;
@@ -32,6 +33,7 @@ using API.Infrastructure.Features.Identity.PersonalProfiles;
 using API.Infrastructure.Features.Identity.Roles;
 using API.Infrastructure.Features.Identity.Users;
 using API.Infrastructure.Features.Personnel.Departments;
+using API.Infrastructure.Features.Personnel.Employees;
 using API.Infrastructure.Features.Personnel.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -148,6 +150,7 @@ namespace API.Infrastructure
 
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
 
             return services;
         }
