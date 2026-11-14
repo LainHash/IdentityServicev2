@@ -1,4 +1,4 @@
-﻿using API.Contract.DTOs;
+using API.Contract.DTOs;
 using API.Contract.DTOs.Guest.Customers;
 using API.Domain.Common.Entities;
 using API.Domain.Features.Guest.Customers;
@@ -11,7 +11,7 @@ namespace API.Infrastructure.Features.Guest.Customers
         public CustomerMapping()
         {
             CreateMap<Customer, CustomerResponse>()
-                .IncludeBase<AuditableEntity, AuditableResponse>();
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<Customer, CustomerDetailResponse>()
                 .IncludeBase<Customer, CustomerResponse>();

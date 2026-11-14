@@ -1,4 +1,6 @@
+using API.Contract.DTOs;
 using API.Contract.DTOs.Identity.PersonalProfiles;
+using API.Domain.Common.Entities;
 using API.Domain.Features.Identity.PersonalProfiles;
 using API.Domain.Features.Identity.PersonalProfiles.ValueObjects;
 using AutoMapper;
@@ -32,7 +34,8 @@ namespace API.Infrastructure.Features.Identity.PersonalProfiles
 
             CreateMap<CompleteProfileRequest, PersonalProfile>();
 
-            CreateMap<PersonalProfile, PersonalProfileResponse>();
+            CreateMap<PersonalProfile, PersonalProfileResponse>()
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<CreatePersonalProfileRequest, PersonalProfile>();
 

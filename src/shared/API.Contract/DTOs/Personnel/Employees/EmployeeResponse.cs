@@ -1,10 +1,9 @@
-﻿using API.Domain.Features.Personnel.Employees.Enums;
+using API.Domain.Features.Personnel.Employees.Enums;
 
 namespace API.Contract.DTOs.Personnel.Employees
 {
-    public class EmployeeResponse
+    public class EmployeeResponse : SoftDeletableResponse
     {
-        public Guid Id { get; set; }
         public string Code { get; set; } = null!;
         public string PositionName { get; set; } = null!;
         public string PositionCode { get; set; } = null!;

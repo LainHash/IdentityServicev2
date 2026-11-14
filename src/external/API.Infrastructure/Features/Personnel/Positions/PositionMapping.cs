@@ -1,5 +1,7 @@
+using API.Contract.DTOs;
 using API.Contract.DTOs.Personnel.Positions;
 using API.Contract.ImportDataRows.Identity;
+using API.Domain.Common.Entities;
 using API.Domain.Features.Personnel.Positions;
 using AutoMapper;
 
@@ -10,24 +12,16 @@ namespace API.Infrastructure.Features.Personnel.Positions
         public PositionMapping()
         {
             CreateMap<Position, PositionResponse>()
-                .ForMember(dest => dest.Id,
-                    opt => opt.MapFrom(src => src.PublicId))
                 .ForMember(dest => dest.DepartmentId,
                     opt => opt.MapFrom(src => src.Department.PublicId))
                 .ForMember(dest => dest.DepartmentName,
                     opt => opt.MapFrom(src => src.Department.Name))
                 .ForMember(dest => dest.DepartmentCode,
-                    opt => opt.MapFrom(src => src.Department.Code));
+                    opt => opt.MapFrom(src => src.Department.Code))
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<Position, PositionDetailResponse>()
-                .ForMember(dest => dest.Id,
-                    opt => opt.MapFrom(src => src.PublicId))
-                .ForMember(dest => dest.DepartmentId,
-                    opt => opt.MapFrom(src => src.Department.PublicId))
-                .ForMember(dest => dest.DepartmentName,
-                    opt => opt.MapFrom(src => src.Department.Name))
-                .ForMember(dest => dest.DepartmentCode,
-                    opt => opt.MapFrom(src => src.Department.Code));
+                .IncludeBase<Position, PositionResponse>();
 
             CreateMap<CreatePositionRequest, Position>();
 

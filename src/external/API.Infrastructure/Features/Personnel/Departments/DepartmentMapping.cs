@@ -1,5 +1,7 @@
+using API.Contract.DTOs;
 using API.Contract.DTOs.Personnel.Departments;
 using API.Contract.ImportDataRows.Identity;
+using API.Domain.Common.Entities;
 using API.Domain.Features.Personnel.Departments;
 using AutoMapper;
 
@@ -10,14 +12,10 @@ namespace API.Infrastructure.Features.Personnel.Departments
         public DepartmentMapping()
         {
             CreateMap<Department, DepartmentResponse>()
-                .ForMember(dest => dest.Id,
-                    opt => opt.MapFrom(src => src.PublicId));
+                .IncludeBase<SoftDeletableEntity, SoftDeletableResponse>();
 
             CreateMap<Department, DepartmentDetailResponse>()
-                .ForMember(dest => dest.Id,
-                    opt => opt.MapFrom(src => src.PublicId))
-                .ForMember(dest => dest.Positions,
-                    opt => opt.MapFrom(src => src.Positions));
+                .IncludeBase<Department, DepartmentResponse>();
 
             CreateMap<CreateDepartmentRequest, Department>();
 

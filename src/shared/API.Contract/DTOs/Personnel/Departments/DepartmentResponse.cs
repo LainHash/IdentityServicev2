@@ -1,8 +1,7 @@
 namespace API.Contract.DTOs.Personnel.Departments
 {
-    public class DepartmentResponse
+    public class DepartmentResponse : SoftDeletableResponse
     {
-        public Guid Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }

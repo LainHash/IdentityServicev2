@@ -1,6 +1,6 @@
 namespace API.Contract.DTOs.Identity.PersonalProfiles
 {
-    public class PersonalProfileResponse
+    public class PersonalProfileResponse : SoftDeletableResponse
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

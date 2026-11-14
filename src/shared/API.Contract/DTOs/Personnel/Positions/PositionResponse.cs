@@ -1,8 +1,7 @@
 namespace API.Contract.DTOs.Personnel.Positions
 {
-    public class PositionResponse
+    public class PositionResponse : SoftDeletableResponse
     {
-        public Guid Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
