@@ -9,7 +9,7 @@ namespace API.Domain.Features.Personnel.Positions
         public string Name { get; private set; } = null!;
         public string? Description { get; private set; }
 
-        public string PositionCode { get; private set; } = null!;
+        public string Code { get; private set; } = null!;
 
         public long DepartmentId { get; private set; }
         public Department Department { get; private set; } = null!;
@@ -24,7 +24,7 @@ namespace API.Domain.Features.Personnel.Positions
         public Position(string name, string positionCode, long departmentId, string? description = null)
         {
             Name = name;
-            PositionCode = positionCode;
+            Code = positionCode;
             DepartmentId = departmentId;
             Description = description;
         }
@@ -38,7 +38,7 @@ namespace API.Domain.Features.Personnel.Positions
         public Position Update(string name, string positionCode, string? description = null)
         {
             Name = name;
-            PositionCode = positionCode;
+            Code = positionCode;
             Description = description;
             return this;
         }

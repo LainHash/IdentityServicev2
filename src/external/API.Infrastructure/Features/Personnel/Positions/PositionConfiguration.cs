@@ -31,7 +31,7 @@ namespace API.Infrastructure.Features.Personnel.Positions
             builder.Property(x => x.Description)
                 .HasMaxLength(1000);
 
-            builder.HasIndex(x => x.PositionCode)
+            builder.HasIndex(x => x.Code)
                 .IsUnique();
 
             builder.HasMany(x => x.Employees)

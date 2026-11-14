@@ -10,6 +10,8 @@ using API.Application.Features.Identity.OtpVerifications;
 using API.Application.Features.Identity.PersonalProfiles;
 using API.Application.Features.Identity.Roles;
 using API.Application.Features.Identity.Users;
+using API.Application.Features.Personnel.Departments;
+using API.Application.Features.Personnel.Positions;
 using API.Contract.Settings;
 using API.Domain.Common.Repositories;
 using API.Domain.Features.Business.Audit;
@@ -29,6 +31,8 @@ using API.Infrastructure.Features.Identity.OtpVerifications;
 using API.Infrastructure.Features.Identity.PersonalProfiles;
 using API.Infrastructure.Features.Identity.Roles;
 using API.Infrastructure.Features.Identity.Users;
+using API.Infrastructure.Features.Personnel.Departments;
+using API.Infrastructure.Features.Personnel.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -141,6 +145,9 @@ namespace API.Infrastructure
             services.AddScoped<IPersonalProfileService, PersonalProfileService>();
 
             services.AddScoped<ICustomerService, CustomerService>();
+
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IPositionService, PositionService>();
 
             return services;
         }
